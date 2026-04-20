@@ -1,0 +1,8 @@
+net.micode.notes.app-pngs-0 D:\Data\CS\MiNote\Notes-master\Notes-master\app\build\generated\res\pngs\debug
+net.micode.notes.app-resValues-1 D:\Data\CS\MiNote\Notes-master\Notes-master\app\build\generated\res\resValues\debug
+net.micode.notes.app-rs-2 D:\Data\CS\MiNote\Notes-master\Notes-master\app\build\generated\res\rs\debug
+net.micode.notes.app-mergeDebugResources-3 D:\Data\CS\MiNote\Notes-master\Notes-master\app\build\intermediates\incremental\debug\mergeDebugResources\merged.dir
+net.micode.notes.app-mergeDebugResources-4 D:\Data\CS\MiNote\Notes-master\Notes-master\app\build\intermediates\incremental\debug\mergeDebugResources\stripped.dir
+net.micode.notes.app-merged_res-5 D:\Data\CS\MiNote\Notes-master\Notes-master\app\build\intermediates\merged_res\debug
+net.micode.notes.app-app-6 D:\Data\CS\MiNote\Notes-master\Notes-master\app\res
+net.micode.notes.app-debug-7 D:\Data\CS\MiNote\Notes-master\Notes-master\app\src\debug\res

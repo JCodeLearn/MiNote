@@ -1,0 +1,361 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<!--
+3 Copyright (c) 2010-2011, The MiCode Open Source Community (www.micode.net)
+4
+5     Licensed under the Apache License, Version 2.0 (the "License");
+6     you may not use this file except in compliance with the License.
+7     You may obtain a copy of the License at
+8
+9          http://www.apache.org/licenses/LICENSE-2.0
+10
+11     Unless required by applicable law or agreed to in writing, software
+12     distributed under the License is distributed on an "AS IS" BASIS,
+13     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+14     See the License for the specific language governing permissions and
+15     limitations under the License.
+16-->
+17<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+18    package="net.micode.notes"
+19    android:versionCode="1"
+20    android:versionName="1.0" >
+21    <!--
+22 头部信息与环境声明
+23        manifest 标签解析
+24            package：源代码所在包路径.
+25            其余两项参数用于标记当前引用的版本和具体版本号.
+26
+27        uses-sdk 指定应用运行所需的最低 Android 系统环境，表明系统调用 API 版本.
+28    -->
+29    <uses-sdk
+29-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:30:5-44
+30        android:minSdkVersion="16"
+30-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:30:15-41
+31        android:targetSdkVersion="33" />
+31-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:30:5-44
+32
+33    <!--
+34         权限申请区
+35        WRITE_EXTERNAL_STORAGE：把便签导出到 SD 卡或者插入本地图片
+36        INSTALL_SHORTCUT：支持 Send to home 功能，在 home page 能看到具体的标签内容
+37
+38        INTERNET：允许引用访问互联网
+39        READ_CONTACTS：允许应用读取联系人数据，在 Android 6.0（API 23）及以上版本，应用必须在运行时弹出窗口询问用户，用户同意后才能读取.
+40        GET_ACCOUNTS：允许应用获取设备上已登录的账户列表.
+41        AUTHENTICATE_ACCOUNTS：允许应用作为“身份验证器”.
+42        USE_CREDENTIALS：允许应用请求账户的身份验证令牌（Auth Token）.
+43        MANAGE_ACCOUNTS：允许应用管理账户列表（添加、删除账户，修改密码）.
+44        满足 GTask（谷歌任务）云端同步 功能
+45
+46        RECEIVE_BOOT_COMPLETED：小米便签设置了闹钟任务，但是闹钟任务的具体实现需要 Android 系统调用 AlarmManager，该系统调用是运行在内存中的，
+47            即意味着如果手机关机，关于具体的任务调度，即 AlarmManager 该通知谁去执行闹钟任务这项调度会被遗失，所以系统为了解决该问题，会当闹钟任务到达时，
+48            使用广播机制唤醒注册了该权限的所有应用，让该应用自行处理后续事宜.
+49
+50            Android系统的闹钟机制依赖于运行在内存中的AlarmManager服务，当小米便签设置闹钟时，本质上是将提醒任务登记在系统的调度清单里。由于该清单驻留在易失性内存中，
+51            一旦手机关机或重启，所有已注册的调度记录都会随之消失，即便便签的原始数据依然稳固地存储在磁盘数据库中，系统在重启后也无法自发地恢复这些执行指令。
+52            为了弥补这一断层，系统在每次开机完成后都会发出RECEIVE_BOOT_COMPLETED广播，作为一种“提醒所有应用自查”的信号。拥有该权限的小米便签在接收到这一开机信号后会立即在后台唤醒，
+53            通过读取本地数据库中尚未触发的提醒时间，重新向AlarmManager提交挂号申请。通过这种“开机即同步”的自愈逻辑，应用成功将遗失在内存中的调度任务手动找回并重新激活，
+54            从而确保闹钟在预定时刻能够准时响铃。
+55    -->
+56
+57    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+57-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:55:5-81
+57-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:55:22-78
+58    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+58-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:56:5-88
+58-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:56:22-85
+59    <uses-permission android:name="android.permission.INTERNET" />
+59-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:57:5-67
+59-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:57:22-64
+60    <uses-permission android:name="android.permission.READ_CONTACTS" />
+60-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:58:5-72
+60-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:58:22-69
+61    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+61-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:59:5-74
+61-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:59:22-71
+62    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+62-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:60:5-80
+62-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:60:22-77
+63    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+63-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:61:5-71
+63-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:61:22-68
+64    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+64-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:62:5-74
+64-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:62:22-71
+65    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+65-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:63:5-81
+65-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:63:22-78
+66    <!--
+67     Android 四大组件配置
+68        Activity：交互的门户
+69            Activity 是 Android 应用中最直观的组件，它代表了应用的一个单一界面。作为与用户交互的唯一入口，它承载了复杂的 UI 逻辑与视图（View）层级。
+70                Activity 的设计核心在于其精细的生命周期（Lifecycle）管理，从 onCreate 到 onDestroy，系统通过回调机制确保应用在配置更改（如屏幕旋转）或内存不足时能够正确保存和恢复状态。
+71                在 Android 16.0 等现代版本中，Activity 更加强调响应式布局与多窗口协作。
+72
+73        Service：幕后的劳模
+74            Service 专门用于执行不需要 UI 交互的长期运行任务，例如播放音乐、同步网络数据或执行复杂的计算。它运行在主线程中（除非另开线程），分为启动状态（Started）和绑定状态（Bound）。
+75                由于 Service 不具备界面，它在系统中拥有比后台 Activity 更高的优先级。随着 Android 系统的演进（从 API 26 开始），为了系统续航，后台服务的限制日益严格，开发者现在更多地转向使用 WorkManager
+76                或前台服务（Foreground Service）来处理持久任务。
+77
+78        Broadcast Receiver：信息的监听者
+79            Broadcast Receiver 是应用与系统、或其他应用之间进行异步通信的桥梁。它就像一个“顺风耳”，专门监听系统发出的各类广播信号（如电池电量低、网络切换或你刚才研究的开机广播）。
+80                通过在 AndroidManifest.xml 中静态注册或在代码中动态注册，应用可以在不运行的情况下被系统唤醒，从而实现解耦的事件响应逻辑。
+81
+82        Content Provider：数据的调度员
+83            Content Provider 是 Android 实现跨应用数据共享的标准接口。它通过 URI（统一资源标识符） 将应用内部的私有数据（通常存储在 SQLite 数据库中）以类似关系型数据库表的形式暴露给其他应用。
+84                它封装了底层存储细节，提供了标准的 insert、delete、query 和 update 操作，配合 ContentResolver，使得联系人、多媒体库等系统敏感数据可以在保证安全的前提下被第三方应用合法访问。
+85
+86        可以深入了解的一个点：Android 系统的广播机制
+87
+88        *** 从目前的调试结果来看，闹钟设置这项功能在当前系统环境下已经失效.
+89    -->
+90    <!--
+91        app 图标： @drawable/icon_app：@drawable 是一个逻辑分类，主要指向 app/res/drawable* 开头的文件和文件夹，寻找名为 icon_app 的文件
+92        app 名字：@string/app_name：@string 也是一个逻辑分类，主要指向 app/res/values* 开头的文件和文件夹，寻找 name 属性为 app_name 的 xml 标签.
+93    -->
+94    <application
+94-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:95:5-229:19
+95        android:debuggable="true"
+96        android:icon="@drawable/icon_app"
+96-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:96:9-42
+97        android:label="@string/app_name"
+97-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:97:9-41
+98        android:testOnly="true" >
+99
+100        <!--
+101             activity（列表页）
+102            name：对应的 Java 类.
+103            exported：允许系统桌面或其他应用可以启动该界面.
+104            configChanges：告诉系统：当键盘弹出/隐藏、屏幕旋转、屏幕尺寸变化时，不要销毁并重启这个 Activity.
+105            *** label：界面标题（手机顶部的标题栏）.（rebundant，建议 remove）
+106            launchMode：启动该 activity 的方式，单例模式
+107            theme：在 app/res/values 目录下寻找 name 属性为 NoteTheme 的 xml 标签.
+108            *** uiOptions：窄屏下的 ui 优化，当手机屏幕太窄放不下菜单时，把菜单栏（ActionBar）拆分到屏幕底部。现代 Android 16.0 已经基本废弃了这种处理方式，改用底栏（BottomNavigationView）
+109            windowSoftInputMode：设定软键盘交互方式，当键盘弹出时，界面会整体向上平移（Pan），而不是压缩界面高度。这样可以确保底部的输入框不被键盘盖住。
+110        -->
+111        <activity
+111-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:108:9-124:20
+112            android:name="net.micode.notes.ui.NotesListActivity"
+112-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:109:13-49
+113            android:configChanges="keyboardHidden|orientation|screenSize"
+113-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:111:13-74
+114            android:exported="true"
+114-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:110:13-36
+115            android:label="@string/app_name"
+115-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:112:13-45
+116            android:launchMode="singleTop"
+116-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:113:13-43
+117            android:theme="@style/NoteTheme"
+117-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:114:13-45
+118            android:uiOptions="splitActionBarWhenNarrow"
+118-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:115:13-57
+119            android:windowSoftInputMode="adjustPan" >
+119-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:116:13-52
+120            <intent-filter>
+120-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:118:13-123:29
+121
+122                <!-- app 的主入口，点击 app 图标时会触发的入口 -->
+123                <action android:name="android.intent.action.MAIN" />
+123-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:120:17-69
+123-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:120:25-66
+124                <!-- 决定图标是否出现在桌面，存在这行，则可以在桌面找到该 app，否则只能从其他 app 调用. -->
+125                <category android:name="android.intent.category.LAUNCHER" />
+125-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:122:17-77
+125-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:122:27-74
+126            </intent-filter>
+127        </activity>
+128
+129        <!--
+130             activity
+131            便签编辑页面
+132        -->
+133        <activity
+133-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:129:9-158:20
+134            android:name="net.micode.notes.ui.NoteEditActivity"
+134-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:130:13-48
+135            android:configChanges="keyboardHidden|orientation|screenSize"
+135-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:132:13-74
+136            android:exported="true"
+136-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:131:13-36
+137            android:launchMode="singleTop"
+137-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:133:13-43
+138            android:theme="@style/NoteTheme" >
+138-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:134:13-45
+139            <intent-filter>
+139-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:136:13-141:29
+140                <action android:name="android.intent.action.VIEW" />
+140-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:137:17-69
+140-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:137:25-66
+141
+142                <category android:name="android.intent.category.DEFAULT" />
+142-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:138:17-76
+142-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:138:27-73
+143
+144                <data android:mimeType="vnd.android.cursor.item/text_note" />
+144-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:139:17-78
+144-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:139:23-75
+145                <data android:mimeType="vnd.android.cursor.item/call_note" />
+145-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:139:17-78
+145-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:139:23-75
+146            </intent-filter>
+147            <intent-filter>
+147-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:143:13-148:29
+148                <action android:name="android.intent.action.INSERT_OR_EDIT" />
+148-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:144:17-79
+148-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:144:25-76
+149
+150                <category android:name="android.intent.category.DEFAULT" />
+150-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:138:17-76
+150-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:138:27-73
+151
+152                <data android:mimeType="vnd.android.cursor.item/text_note" />
+152-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:139:17-78
+152-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:139:23-75
+153                <data android:mimeType="vnd.android.cursor.item/call_note" />
+153-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:139:17-78
+153-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:139:23-75
+154            </intent-filter>
+155            <intent-filter>
+155-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:150:13-153:29
+156                <action android:name="android.intent.action.SEARCH" />
+156-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:151:17-71
+156-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:151:25-68
+157
+158                <category android:name="android.intent.category.DEFAULT" />
+158-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:138:17-76
+158-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:138:27-73
+159            </intent-filter>
+160
+161            <meta-data
+161-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:155:13-157:54
+162                android:name="android.app.searchable"
+162-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:156:17-54
+163                android:resource="@xml/searchable" />
+163-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:157:17-51
+164        </activity>
+165
+166        <provider
+166-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:160:9-163:43
+167            android:name="net.micode.notes.data.NotesProvider"
+167-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:161:13-63
+168            android:authorities="micode_notes"
+168-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:162:13-47
+169            android:multiprocess="true" />
+169-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:163:13-40
+170
+171        <receiver
+171-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:165:9-179:20
+172            android:name="net.micode.notes.widget.NoteWidgetProvider_2x"
+172-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:166:13-57
+173            android:exported="true"
+173-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:168:13-36
+174            android:label="@string/app_widget2x2" >
+174-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:167:13-50
+175            <intent-filter>
+175-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:170:13-174:29
+176                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+176-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:171:17-84
+176-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:171:25-81
+177                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+177-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:172:17-85
+177-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:172:25-82
+178                <action android:name="android.intent.action.PRIVACY_MODE_CHANGED" />
+178-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:173:17-85
+178-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:173:25-82
+179            </intent-filter>
+180
+181            <meta-data
+181-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:176:13-178:58
+182                android:name="android.appwidget.provider"
+182-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:177:17-58
+183                android:resource="@xml/widget_2x_info" />
+183-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:178:17-55
+184        </receiver>
+185        <receiver
+185-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:180:9-194:20
+186            android:name="net.micode.notes.widget.NoteWidgetProvider_4x"
+186-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:181:13-57
+187            android:exported="true"
+187-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:183:13-36
+188            android:label="@string/app_widget4x4" >
+188-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:182:13-50
+189            <intent-filter>
+189-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:170:13-174:29
+190                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+190-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:171:17-84
+190-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:171:25-81
+191                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+191-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:172:17-85
+191-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:172:25-82
+192                <action android:name="android.intent.action.PRIVACY_MODE_CHANGED" />
+192-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:173:17-85
+192-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:173:25-82
+193            </intent-filter>
+194
+195            <meta-data
+195-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:176:13-178:58
+196                android:name="android.appwidget.provider"
+196-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:177:17-58
+197                android:resource="@xml/widget_4x_info" />
+197-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:178:17-55
+198        </receiver>
+199        <receiver
+199-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:196:9-200:20
+200            android:name="net.micode.notes.ui.AlarmInitReceiver"
+200-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:196:19-55
+201            android:exported="true" >
+201-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:196:56-79
+202            <intent-filter>
+202-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:197:13-199:29
+203                <action android:name="android.intent.action.BOOT_COMPLETED" />
+203-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:198:17-79
+203-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:198:25-76
+204            </intent-filter>
+205        </receiver>
+206        <receiver
+206-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:202:9-205:20
+207            android:name="net.micode.notes.ui.AlarmReceiver"
+207-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:203:13-61
+208            android:process=":remote" >
+208-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:204:13-38
+209        </receiver>
+210
+211        <activity
+211-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:207:9-212:20
+212            android:name="net.micode.notes.ui.AlarmAlertActivity"
+212-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:208:13-50
+213            android:label="@string/app_name"
+213-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:209:13-45
+214            android:launchMode="singleInstance"
+214-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:210:13-48
+215            android:theme="@android:style/Theme.Holo.Wallpaper.NoTitleBar" >
+215-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:211:13-75
+216        </activity>
+217        <activity
+217-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:214:9-219:20
+218            android:name="net.micode.notes.ui.NotesPreferenceActivity"
+218-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:215:13-71
+219            android:label="@string/preferences_title"
+219-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:216:13-54
+220            android:launchMode="singleTop"
+220-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:217:13-43
+221            android:theme="@android:style/Theme.Holo.Light" >
+221-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:218:13-60
+222        </activity>
+223
+224        <service
+224-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:221:9-224:19
+225            android:name="net.micode.notes.gtask.remote.GTaskSyncService"
+225-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:222:13-74
+226            android:exported="false" >
+226-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:223:13-37
+227        </service>
+228
+229        <meta-data
+229-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:226:9-228:52
+230            android:name="android.app.default_searchable"
+230-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:227:13-58
+231            android:value=".ui.NoteEditActivity" />
+231-->D:\Data\CS\MiNote\Notes-master\Notes-master\app\AndroidManifest.xml:228:13-49
+232    </application>
+233
+234</manifest>

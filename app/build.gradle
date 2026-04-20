@@ -1,0 +1,36 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'net.micode.notes'
+    // 尽量使用较低的编译版本来适配旧代码，但又不能太低导致现代 AS 拒绝编译
+    compileSdkVersion 33
+
+    useLibrary 'org.apache.http.legacy'
+    
+    defaultConfig {
+        applicationId "net.micode.notes"
+        minSdkVersion 16 // 早期设备支持
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
+    }
+
+    // 这一步是灵魂！告诉 Gradle，源码不在现代的 src/main/java 下，而就在 src 下
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+    }
+}
+
+dependencies {
+    // 暂时不添加任何现代依赖，看看原生代码能否编译过
+}
