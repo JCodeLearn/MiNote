@@ -64,8 +64,14 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <permission
+        android:name="net.micode.notes.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="net.micode.notes.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
     <!--
-     Android 四大组件配置
+ Android 四大组件配置
         Activity：交互的门户
             Activity 是 Android 应用中最直观的组件，它代表了应用的一个单一界面。作为与用户交互的唯一入口，它承载了复杂的 UI 逻辑与视图（View）层级。
                 Activity 的设计核心在于其精细的生命周期（Lifecycle）管理，从 onCreate 到 onDestroy，系统通过回调机制确保应用在配置更改（如屏幕旋转）或内存不足时能够正确保存和恢复状态。
@@ -93,6 +99,7 @@
         app 名字：@string/app_name：@string 也是一个逻辑分类，主要指向 app/res/values* 开头的文件和文件夹，寻找 name 属性为 app_name 的 xml 标签.
     -->
     <application
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:icon="@drawable/icon_app"
         android:label="@string/app_name"
@@ -230,6 +237,18 @@
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".ui.NoteEditActivity" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="net.micode.notes.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+        </provider>
     </application>
 
 </manifest>

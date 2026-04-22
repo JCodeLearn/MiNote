@@ -16,24 +16,30 @@
 -->
 
 <menu
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_new_folder"
-        android:title="@string/menu_create_folder"/>
+        android:title="@string/menu_create_folder"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_export_text"
-        android:title="@string/menu_export_text"/>
+        android:title="@string/menu_export_text"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_sync"
-        android:title="@string/menu_sync"/>
+        android:title="@string/menu_sync"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_setting"
-        android:title="@string/menu_setting" />
+        android:title="@string/menu_setting"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_search"
-        android:title="@string/menu_search"/>
+        android:title="@string/menu_search"
+        app:showAsAction="never"/>
 </menu>

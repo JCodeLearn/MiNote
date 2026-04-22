@@ -1,4 +1,4 @@
-#Thu Mar 26 20:24:16 GMT+08:00 2026
-base.0=D\:\\Data\\CS\\MiNote\\Notes-master\\Notes-master\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-path.0=classes.dex
+#Tue Apr 21 15:43:32 CST 2026
+base.0=C\:\\Application\\Data\\MiNote\\Notes-master\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
 renamed.0=classes.dex
+path.0=classes.dex

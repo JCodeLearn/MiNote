@@ -52,6 +52,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
+
 import net.micode.notes.R;
 import net.micode.notes.data.Notes;
 import net.micode.notes.data.Notes.TextNote;
@@ -152,14 +154,37 @@ public class NoteEditActivity extends Activity implements OnClickListener,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 1. 必须首先加载布局，否则后面的 findViewById 会返回 null 导致崩溃
         this.setContentView(R.layout.note_edit);
 
+        // 2. 状态检查：如果初始化失败（如传参错误），则直接结束 Activity
         if (savedInstanceState == null && !initActivityState(getIntent())) {
             finish();
             return;
         }
+
+        // 3. 初始化业务资源（如数据库、UI 组件状态等）
         initResources();
 
+        // 4. 【核心重构】初始化顶部 Toolbar
+        Toolbar topToolbar = findViewById(R.id.top_toolbar);
+        if (topToolbar != null) {
+            // 挂载详情页菜单文件（确保 res/menu/note_edit.xml 存在）
+            topToolbar.inflateMenu(R.menu.note_edit);
+
+            // 设置菜单点击监听
+            topToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    // 转发事件：将 Toolbar 的点击直接交给 Activity 现有的菜单逻辑处理
+                    // 这里的 NoteEditActivity.this 能够正确指向外部类，不会再报错
+                    return NoteEditActivity.this.onOptionsItemSelected(item);
+                }
+            });
+        }
+
+        // 5. 保留原有逻辑：长按内容区域弹出系统选项菜单（可选）
         findViewById(android.R.id.content).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {

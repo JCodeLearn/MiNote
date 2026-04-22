@@ -33,4 +33,7 @@ android {
 
 dependencies {
     // 暂时不添加任何现代依赖，看看原生代码能否编译过
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+
+    implementation 'com.google.android.material:material:1.8.0'
 }

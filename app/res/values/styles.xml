@@ -58,12 +58,17 @@
         <item name="android:textColor">@color/secondary_text_dark</item>
     </style>
 
-    <style name="NoteTheme" parent="@android:style/Theme.Holo.Light">
-        <item name="android:actionBarStyle">@style/NoteActionBarStyle</item>
+    <style name="NoteTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="actionBarStyle">@style/NoteActionBarStyle</item>
+
+        <item name="colorPrimary">#F5F5F5</item> <item name="colorPrimaryDark">#E0E0E0</item> <item name="colorAccent">#FF8C00</item> </style>
+
+    <style name="NoteActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="displayOptions">showTitle|showHome</item>
+        <item name="titleTextStyle">@style/NoteActionBarTitleText</item>
     </style>
 
-    <style name="NoteActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
-        <item name="android:displayOptions" />
-        <item name="android:visibility">gone</item>
+    <style name="NoteActionBarTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/primary_text_dark</item>
     </style>
 </resources>

@@ -19,6 +19,7 @@ package net.micode.notes.ui;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import androidx.appcompat.widget.Toolbar;
 import android.appwidget.AppWidgetManager;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
@@ -145,6 +146,23 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
          * Insert an introduction when user firstly use this application
          */
         setAppInfoFromRawRes();
+
+        // 1. 找到我们刚在 XML 里加的底部 Toolbar
+        Toolbar bottomToolbar = findViewById(R.id.bottom_toolbar);
+        if (bottomToolbar != null) {
+            // 2. 将小米便签原有的菜单 XML 挂载到这个 Toolbar 上
+            // 假设原来的菜单叫 note_list_options.xml (根据你之前的文件树得出的结论)
+            bottomToolbar.inflateMenu(R.menu.note_list);
+
+            // 3. 监听底部 Toolbar 的菜单点击事件，直接转交给原有的逻辑处理
+            bottomToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    // 完美复用老代码中的 onOptionsItemSelected 逻辑
+                    return NotesListActivity.this.onOptionsItemSelected(item);
+                }
+            });
+        }
     }
 
     @Override
