@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright (c) 2010-2011, The MiCode Open Source Community (www.micode.net)
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.micode.notes"
+    android:versionCode="1"
+    android:versionName="0.1" >
+    <!-- 头部信息与环境声明
+        manifest 标签解析
+            package：源代码所在包路径.
+            其余两项参数用于标记当前引用的版本和具体版本号.
+
+        uses-sdk 指定应用运行所需的最低 Android 系统环境，表明系统调用 API 版本.
+    -->
+
+    <uses-sdk android:minSdkVersion="14" />
+
+    <!-- 权限申请区
+        WRITE_EXTERNAL_STORAGE：把便签导出到 SD 卡或者插入本地图片
+        INSTALL_SHORTCUT：支持 Send to home 功能，在 home page 能看到具体的标签内容
+
+        INTERNET：允许引用访问互联网
+        READ_CONTACTS：允许应用读取联系人数据，在 Android 6.0（API 23）及以上版本，应用必须在运行时弹出窗口询问用户，用户同意后才能读取.
+        GET_ACCOUNTS：允许应用获取设备上已登录的账户列表.
+        AUTHENTICATE_ACCOUNTS：允许应用作为“身份验证器”.
+        USE_CREDENTIALS：允许应用请求账户的身份验证令牌（Auth Token）.
+        MANAGE_ACCOUNTS：允许应用管理账户列表（添加、删除账户，修改密码）.
+        满足 GTask（谷歌任务）云端同步 功能
+
+        RECEIVE_BOOT_COMPLETED：小米便签设置了闹钟任务，但是闹钟任务的具体实现需要 Android 系统调用 AlarmManager，该系统调用是运行在内存中的，
+            即意味着如果手机关机，关于具体的任务调度，即 AlarmManager 该通知谁去执行闹钟任务这项调度会被遗失，所以系统为了解决该问题，会当闹钟任务到达时，
+            使用广播机制唤醒注册了该权限的所有应用，让该应用自行处理后续事宜.
+
+            Android系统的闹钟机制依赖于运行在内存中的AlarmManager服务，当小米便签设置闹钟时，本质上是将提醒任务登记在系统的调度清单里。由于该清单驻留在易失性内存中，
+            一旦手机关机或重启，所有已注册的调度记录都会随之消失，即便便签的原始数据依然稳固地存储在磁盘数据库中，系统在重启后也无法自发地恢复这些执行指令。
+            为了弥补这一断层，系统在每次开机完成后都会发出RECEIVE_BOOT_COMPLETED广播，作为一种“提醒所有应用自查”的信号。拥有该权限的小米便签在接收到这一开机信号后会立即在后台唤醒，
+            通过读取本地数据库中尚未触发的提醒时间，重新向AlarmManager提交挂号申请。通过这种“开机即同步”的自愈逻辑，应用成功将遗失在内存中的调度任务手动找回并重新激活，
+            从而确保闹钟在预定时刻能够准时响铃。
+    -->
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Android 四大组件配置
+        Activity：交互的门户
+            Activity 是 Android 应用中最直观的组件，它代表了应用的一个单一界面。作为与用户交互的唯一入口，它承载了复杂的 UI 逻辑与视图（View）层级。
+                Activity 的设计核心在于其精细的生命周期（Lifecycle）管理，从 onCreate 到 onDestroy，系统通过回调机制确保应用在配置更改（如屏幕旋转）或内存不足时能够正确保存和恢复状态。
+                在 Android 16.0 等现代版本中，Activity 更加强调响应式布局与多窗口协作。
+
+        Service：幕后的劳模
+            Service 专门用于执行不需要 UI 交互的长期运行任务，例如播放音乐、同步网络数据或执行复杂的计算。它运行在主线程中（除非另开线程），分为启动状态（Started）和绑定状态（Bound）。
+                由于 Service 不具备界面，它在系统中拥有比后台 Activity 更高的优先级。随着 Android 系统的演进（从 API 26 开始），为了系统续航，后台服务的限制日益严格，开发者现在更多地转向使用 WorkManager
+                或前台服务（Foreground Service）来处理持久任务。
+
+        Broadcast Receiver：信息的监听者
+            Broadcast Receiver 是应用与系统、或其他应用之间进行异步通信的桥梁。它就像一个“顺风耳”，专门监听系统发出的各类广播信号（如电池电量低、网络切换或你刚才研究的开机广播）。
+                通过在 AndroidManifest.xml 中静态注册或在代码中动态注册，应用可以在不运行的情况下被系统唤醒，从而实现解耦的事件响应逻辑。
+
+        Content Provider：数据的调度员
+            Content Provider 是 Android 实现跨应用数据共享的标准接口。它通过 URI（统一资源标识符） 将应用内部的私有数据（通常存储在 SQLite 数据库中）以类似关系型数据库表的形式暴露给其他应用。
+                它封装了底层存储细节，提供了标准的 insert、delete、query 和 update 操作，配合 ContentResolver，使得联系人、多媒体库等系统敏感数据可以在保证安全的前提下被第三方应用合法访问。
+
+        可以深入了解的一个点：Android 系统的广播机制
+
+        *** 从目前的调试结果来看，闹钟设置这项功能在当前系统环境下已经失效.
+
+    -->
+
+    <!--
+        app 图标： @drawable/icon_app：@drawable 是一个逻辑分类，主要指向 app/res/drawable* 开头的文件和文件夹，寻找名为 icon_app 的文件
+        app 名字：@string/app_name：@string 也是一个逻辑分类，主要指向 app/res/values* 开头的文件和文件夹，寻找 name 属性为 app_name 的 xml 标签.
+    -->
+
+    <application
+        android:icon="@drawable/icon_app"
+        android:label="@string/app_name" >
+        <!-- activity（列表页）
+            name：对应的 Java 类.
+            exported：允许系统桌面或其他应用可以启动该界面.
+            configChanges：告诉系统：当键盘弹出/隐藏、屏幕旋转、屏幕尺寸变化时，不要销毁并重启这个 Activity.
+            *** label：界面标题（手机顶部的标题栏）.（rebundant，建议 remove）
+            launchMode：启动该 activity 的方式，单例模式
+            theme：在 app/res/values 目录下寻找 name 属性为 NoteTheme 的 xml 标签.
+            *** uiOptions：窄屏下的 ui 优化，当手机屏幕太窄放不下菜单时，把菜单栏（ActionBar）拆分到屏幕底部。现代 Android 16.0 已经基本废弃了这种处理方式，改用底栏（BottomNavigationView）
+            windowSoftInputMode：设定软键盘交互方式，当键盘弹出时，界面会整体向上平移（Pan），而不是压缩界面高度。这样可以确保底部的输入框不被键盘盖住。
+        -->
+        <activity
+            android:name=".ui.NotesListActivity"
+            android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:theme="@style/NoteTheme"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustPan" >
+
+            <intent-filter>
+                <!-- app 的主入口，点击 app 图标时会触发的入口 -->
+                <action android:name="android.intent.action.MAIN" />
+                <!-- 决定图标是否出现在桌面，存在这行，则可以在桌面找到该 app，否则只能从其他 app 调用. -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- activity
+            便签编辑页面
+        -->
+        <activity
+            android:name=".ui.NoteEditActivity"
+            android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/NoteTheme" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/text_note" />
+                <data android:mimeType="vnd.android.cursor.item/call_note" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT_OR_EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/text_note" />
+                <data android:mimeType="vnd.android.cursor.item/call_note" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+
+        <provider
+            android:name="net.micode.notes.data.NotesProvider"
+            android:authorities="micode_notes"
+            android:multiprocess="true" />
+
+        <receiver
+            android:name=".widget.NoteWidgetProvider_2x"
+            android:label="@string/app_widget2x2"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+                <action android:name="android.intent.action.PRIVACY_MODE_CHANGED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_2x_info" />
+        </receiver>
+        <receiver
+            android:name=".widget.NoteWidgetProvider_4x"
+            android:label="@string/app_widget4x4"
+            android:exported="true" >
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+                <action android:name="android.intent.action.PRIVACY_MODE_CHANGED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_4x_info" />
+        </receiver>
+
+        <receiver android:name=".ui.AlarmInitReceiver" android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="net.micode.notes.ui.AlarmReceiver"
+            android:process=":remote" >
+        </receiver>
+
+        <activity
+            android:name=".ui.AlarmAlertActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Holo.Wallpaper.NoTitleBar" >
+        </activity>
+
+        <activity
+            android:name="net.micode.notes.ui.NotesPreferenceActivity"
+            android:label="@string/preferences_title"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Holo.Light" >
+        </activity>
+
+        <service
+            android:name="net.micode.notes.gtask.remote.GTaskSyncService"
+            android:exported="false" >
+        </service>
+
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".ui.NoteEditActivity" />
+    </application>
+</manifest>

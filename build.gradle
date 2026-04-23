@@ -1,0 +1,27 @@
+buildscript {
+    repositories {
+        // 1. 优先使用阿里云的国内镜像源（速度起飞的核心）
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+
+        // 2. 将官方源作为备用（如果阿里云偶尔抽风没同步到最新包，再去官方找）
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // 依然保持我们指定的 7.4.2 插件版本
+        classpath 'com.android.tools.build:gradle:8.13.0'
+    }
+}
+
+allprojects {
+    repositories {
+        // 同样的，给所有子模块也配置上阿里云镜像
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+
+        google()
+        mavenCentral()
+    }
+}

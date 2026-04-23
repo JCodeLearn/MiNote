@@ -1,0 +1,8 @@
+# Android Studio / Gradle 构建输出
+.gradle/
+.idea/
+*.iml
+build/
+app/build/
+local.properties
+*.un~
