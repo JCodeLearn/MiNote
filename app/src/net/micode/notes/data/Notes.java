@@ -34,6 +34,35 @@ public class Notes {
     // 笔记类型：系统文件夹
     public static final int TYPE_SYSTEM   = 2;
 
+    // 在 Notes 类中添加以下内容
+
+    /**
+     * 标签表字段定义
+     */
+    public interface TagColumns {
+        /** 主键ID */
+        public static final String ID = "_id";
+        /** 标签名称 */
+        public static final String NAME = "name";
+    }
+
+    /**
+     * 笔记-标签关联表字段定义
+     */
+    public interface NoteTagColumns {
+        /** 主键ID */
+        public static final String ID = "_id";
+        /** 笔记ID */
+        public static final String NOTE_ID = "note_id";
+        /** 标签ID */
+        public static final String TAG_ID = "tag_id";
+    }
+
+    // 标签表 URI
+    public static final Uri CONTENT_TAG_URI = Uri.parse("content://" + AUTHORITY + "/tag");
+    // 笔记-标签关联表 URI
+    public static final Uri CONTENT_NOTE_TAG_URI = Uri.parse("content://" + AUTHORITY + "/note_tag");
+
     /**
      * 以下ID为系统文件夹的标识
      * ID_ROOT_FOLDER: 根文件夹（默认）

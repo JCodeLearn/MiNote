@@ -64,6 +64,14 @@ public class NotesProvider extends ContentProvider {
     // URI 匹配码：搜索建议
     private static final int URI_SEARCH_SUGGEST  = 6;
 
+    // 在 NotesProvider 类中添加常量
+    private static final int URI_TAG                = 7;
+    private static final int URI_TAG_ITEM           = 8;
+    private static final int URI_NOTE_TAG           = 9;
+    private static final int URI_NOTE_TAG_ITEM      = 10;
+    private static final int URI_NOTE_TAG_BY_NOTE   = 11;   // 根据笔记ID查关联
+    private static final int URI_NOTE_BY_TAG        = 12;   // 根据标签ID查笔记（多表联查）
+
     static {
         mMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         // 注册 URI 模式
@@ -74,6 +82,13 @@ public class NotesProvider extends ContentProvider {
         mMatcher.addURI(Notes.AUTHORITY, "search", URI_SEARCH);
         mMatcher.addURI(Notes.AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, URI_SEARCH_SUGGEST);
         mMatcher.addURI(Notes.AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY + "/*", URI_SEARCH_SUGGEST);
+
+        mMatcher.addURI(Notes.AUTHORITY, "tag", URI_TAG);
+        mMatcher.addURI(Notes.AUTHORITY, "tag/#", URI_TAG_ITEM);
+        mMatcher.addURI(Notes.AUTHORITY, "note_tag", URI_NOTE_TAG);
+        mMatcher.addURI(Notes.AUTHORITY, "note_tag/#", URI_NOTE_TAG_ITEM);
+        mMatcher.addURI(Notes.AUTHORITY, "note_tag/note/#", URI_NOTE_TAG_BY_NOTE);
+        mMatcher.addURI(Notes.AUTHORITY, "note/by_tag/#", URI_NOTE_BY_TAG);
     }
 
     /**
@@ -119,6 +134,30 @@ public class NotesProvider extends ContentProvider {
         SQLiteDatabase db = mHelper.getReadableDatabase();
         String id = null;
         switch (mMatcher.match(uri)) {
+            case URI_TAG:
+                c = db.query("tag", projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case URI_TAG_ITEM:
+                id = uri.getPathSegments().get(1);
+                c = db.query("tag", projection, "(" + Notes.TagColumns.ID + "=?)" + parseSelection(selection),
+                        new String[]{id}, null, null, sortOrder);
+                break;
+            case URI_NOTE_TAG:
+                c = db.query("note_tag", projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case URI_NOTE_TAG_BY_NOTE:
+                id = uri.getPathSegments().get(2);  // note_tag/note/123
+                c = db.query("note_tag", projection, "(" + Notes.NoteTagColumns.NOTE_ID + "=?)" + parseSelection(selection),
+                        new String[]{id}, null, null, sortOrder);
+                break;
+            case URI_NOTE_BY_TAG:
+                // 多表联查：根据标签ID查询笔记列表
+                id = uri.getPathSegments().get(2);  // note/by_tag/456
+                // 使用 rawQuery 或 db.query 联查
+                String sql = "SELECT n.* FROM " + TABLE.NOTE + " n INNER JOIN note_tag nt ON n." + NoteColumns.ID + "=nt." + Notes.NoteTagColumns.NOTE_ID +
+                        " WHERE nt." + Notes.NoteTagColumns.TAG_ID + "=? AND " + NoteColumns.TYPE + "=" + Notes.TYPE_NOTE;
+                c = db.rawQuery(sql, new String[]{id});
+                break;
             case URI_NOTE:
                 // 查询所有笔记/文件夹
                 c = db.query(TABLE.NOTE, projection, selection, selectionArgs, null, null,
@@ -190,6 +229,22 @@ public class NotesProvider extends ContentProvider {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         long dataId = 0, noteId = 0, insertedId = 0;
         switch (mMatcher.match(uri)) {
+            case URI_TAG:
+                // 插入新标签，如果已有同名标签则忽略或返回已存在ID
+                String name = values.getAsString(Notes.TagColumns.NAME);
+                // 查询是否已存在
+                Cursor tagCursor = db.query("tag", new String[]{Notes.TagColumns.ID},
+                        Notes.TagColumns.NAME + "=?", new String[]{name}, null, null, null);
+                if (tagCursor != null && tagCursor.moveToFirst()) {
+                    insertedId = tagCursor.getLong(0);
+                } else {
+                    insertedId = db.insert("tag", null, values);
+                }
+                if (tagCursor != null) tagCursor.close();
+                break;
+            case URI_NOTE_TAG:
+                insertedId = db.insert("note_tag", null, values);
+                break;
             case URI_NOTE:
                 insertedId = noteId = db.insert(TABLE.NOTE, null, values);
                 break;
@@ -229,6 +284,18 @@ public class NotesProvider extends ContentProvider {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         boolean deleteData = false;
         switch (mMatcher.match(uri)) {
+            case URI_NOTE_TAG:
+                count = db.delete("note_tag", selection, selectionArgs);
+                break;
+            case URI_TAG_ITEM:
+                id = uri.getPathSegments().get(1);
+                count = db.delete("tag", Notes.TagColumns.ID + "=?" + parseSelection(selection), new String[]{id});
+                break;
+            case URI_NOTE_TAG_ITEM:
+                id = uri.getPathSegments().get(1);
+                count = db.delete("note_tag", Notes.NoteTagColumns.ID + "=?" + parseSelection(selection), new String[]{id});
+                break;
+            // 删除笔记时自动删除关联记录，已通过外键级联删除，无需额外处理
             case URI_NOTE:
                 // 保护系统文件夹不被批量删除
                 selection = "(" + selection + ") AND " + NoteColumns.ID + ">0 ";
@@ -277,6 +344,10 @@ public class NotesProvider extends ContentProvider {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         boolean updateData = false;
         switch (mMatcher.match(uri)) {
+            case URI_TAG_ITEM:
+                id = uri.getPathSegments().get(1);
+                count = db.update("tag", values, Notes.TagColumns.ID + "=?" + parseSelection(selection), new String[]{id});
+                break;
             case URI_NOTE:
                 increaseNoteVersion(-1, selection, selectionArgs);
                 count = db.update(TABLE.NOTE, values, selection, selectionArgs);

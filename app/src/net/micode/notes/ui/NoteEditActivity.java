@@ -82,6 +82,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import androidx.core.content.FileProvider;
 import net.micode.notes.tool.NoteImageRenderer;
+import android.database.Cursor;
+import android.content.ContentValues;
+import android.widget.Button;
+import java.util.ArrayList;
 
 public class NoteEditActivity extends Activity implements OnClickListener,
         NoteSettingChangedListener, OnTextViewChangeListener {
@@ -159,6 +163,11 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
     private String mUserQuery;
     private Pattern mPattern;
+
+    private LinearLayout mTagContainer;
+    private EditText mNewTagInput;
+    private Button mAddTagButton;
+    private ArrayList<String> mCurrentTags = new ArrayList<>(); // 临时存储标签名
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -330,6 +339,11 @@ public class NoteEditActivity extends Activity implements OnClickListener,
                         | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_SHOW_TIME
                         | DateUtils.FORMAT_SHOW_YEAR));
 
+        // 加载当前笔记的标签
+        if (mTagContainer != null) {
+            loadTags();
+        }
+
         /**
          * TODO: Add the menu for setting alert. Currently disable it because the DateTimePicker
          * is not ready
@@ -437,6 +451,14 @@ public class NoteEditActivity extends Activity implements OnClickListener,
             mFontSizeId = ResourceParser.BG_DEFAULT_FONT_SIZE;
         }
         mEditTextList = (LinearLayout) findViewById(R.id.note_edit_list);
+
+        // 初始化标签相关视图（如果布局中尚未添加，则跳过避免空指针）
+        mTagContainer = (LinearLayout) findViewById(R.id.ll_tag_container);
+        mNewTagInput = (EditText) findViewById(R.id.et_new_tag);
+        mAddTagButton = (Button) findViewById(R.id.btn_add_tag);
+        if (mAddTagButton != null) {
+            mAddTagButton.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -490,6 +512,12 @@ public class NoteEditActivity extends Activity implements OnClickListener,
                         TextAppearanceResources.getTexAppearanceResource(mFontSizeId));
             }
             mFontSizeSelector.setVisibility(View.GONE);
+        } else if (id == R.id.btn_add_tag && mAddTagButton != null) {
+            String tagName = mNewTagInput.getText().toString().trim();
+            if (!TextUtils.isEmpty(tagName)) {
+                addTag(tagName);
+                mNewTagInput.setText("");
+            }
         }
     }
 
@@ -969,5 +997,132 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
         // 7. 可选：显示提示
         showToast(R.string.share_note_image_start);
+    }
+
+    /**
+     * 从数据库加载当前笔记的所有标签
+     */
+    private void loadTags() {
+        if (mTagContainer == null) return;
+
+        mTagContainer.removeAllViews();
+        mCurrentTags.clear();
+
+        if (!mWorkingNote.existInDatabase()) return;
+
+        // 查询关联表
+        Cursor cursor = getContentResolver().query(
+                Notes.CONTENT_NOTE_TAG_URI,
+                new String[]{Notes.NoteTagColumns.TAG_ID},
+                Notes.NoteTagColumns.NOTE_ID + "=?",
+                new String[]{String.valueOf(mWorkingNote.getNoteId())},
+                null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                long tagId = cursor.getLong(0);
+                // 再查询标签名称
+                Cursor tagCursor = getContentResolver().query(
+                        Notes.CONTENT_TAG_URI,
+                        new String[]{Notes.TagColumns.NAME},
+                        Notes.TagColumns.ID + "=?",
+                        new String[]{String.valueOf(tagId)},
+                        null);
+                if (tagCursor != null && tagCursor.moveToFirst()) {
+                    String tagName = tagCursor.getString(0);
+                    mCurrentTags.add(tagName);
+                    addTagView(tagName);
+                    tagCursor.close();
+                }
+            }
+            cursor.close();
+        }
+    }
+
+    /**
+     * 添加标签（UI和数据库）
+     */
+    private void addTag(String tagName) {
+        if (mCurrentTags.contains(tagName)) return;
+
+        // 1. 确保标签存在于 tag 表中（insert 通过 Provider 实现自动处理重复）
+        ContentValues values = new ContentValues();
+        values.put(Notes.TagColumns.NAME, tagName);
+        Uri tagUri = getContentResolver().insert(Notes.CONTENT_TAG_URI, values);
+        long tagId = ContentUris.parseId(tagUri);
+
+        // 2. 添加关联到 note_tag 表
+        if (mWorkingNote.existInDatabase()) {
+            ContentValues assoc = new ContentValues();
+            assoc.put(Notes.NoteTagColumns.NOTE_ID, mWorkingNote.getNoteId());
+            assoc.put(Notes.NoteTagColumns.TAG_ID, tagId);
+            getContentResolver().insert(Notes.CONTENT_NOTE_TAG_URI, assoc);
+        }
+
+        // 3. 更新本地列表和 UI
+        mCurrentTags.add(tagName);
+        addTagView(tagName);
+    }
+
+    /**
+     * 删除标签关联
+     */
+    private void removeTag(String tagName) {
+        if (!mWorkingNote.existInDatabase()) return;
+
+        // 查找 tagId
+        Cursor cursor = getContentResolver().query(Notes.CONTENT_TAG_URI,
+                new String[]{Notes.TagColumns.ID},
+                Notes.TagColumns.NAME + "=?",
+                new String[]{tagName}, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            long tagId = cursor.getLong(0);
+            // 删除关联
+            getContentResolver().delete(Notes.CONTENT_NOTE_TAG_URI,
+                    Notes.NoteTagColumns.NOTE_ID + "=? AND " + Notes.NoteTagColumns.TAG_ID + "=?",
+                    new String[]{String.valueOf(mWorkingNote.getNoteId()), String.valueOf(tagId)});
+            cursor.close();
+        }
+        // 从列表和UI移除
+        mCurrentTags.remove(tagName);
+        refreshTagViews();
+    }
+
+    /**
+     * 向容器动态添加一个标签 Chip（简化版，用 TextView 代替 Chip）
+     */
+    private void addTagView(String tagName) {
+        if (mTagContainer == null) return;
+
+        TextView chip = new TextView(this);
+        chip.setText(tagName);
+        chip.setBackgroundResource(R.drawable.tag_bg);
+        chip.setPadding(16, 8, 16, 8);
+
+        // 双击删除：两次点击间隔小于 500ms 则删除标签
+        chip.setOnClickListener(v -> {
+            long now = System.currentTimeMillis();
+            Long lastClick = (Long) v.getTag();
+            if (lastClick != null && (now - lastClick) < 500) {
+                // 双击触发删除
+                removeTag(tagName);
+            } else {
+                // 单击记录时间
+                v.setTag(now);
+            }
+        });
+
+        mTagContainer.addView(chip);
+    }
+
+    /**
+     * 刷新标签视图
+     */
+    private void refreshTagViews() {
+        if (mTagContainer == null) return;
+
+        mTagContainer.removeAllViews();
+        for (String tag : mCurrentTags) {
+            addTagView(tag);
+        }
     }
 }

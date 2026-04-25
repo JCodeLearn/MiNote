@@ -107,6 +107,48 @@
                     </LinearLayout>
                 </ScrollView>
 
+                <!-- 新增：标签展示区域 -->
+                <LinearLayout
+                    android:id="@+id/ll_tag_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:gravity="center_vertical" />
+
+                <!-- 新增：标签输入区域 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:paddingBottom="8dp"
+                    android:gravity="center_vertical">
+
+                    <EditText
+                        android:id="@+id/et_new_tag"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="输入标签名"
+                        android:maxLines="1"
+                        android:textSize="14sp"
+                        android:background="@android:drawable/edit_text"
+                        android:padding="8dp" />
+
+                    <Button
+                        android:id="@+id/btn_add_tag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:text="添加"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="7dp"
