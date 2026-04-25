@@ -1,39 +1,57 @@
 plugins {
+    // 引入 Android 应用程序插件，这意味着这个模块将被编译为一个可以独立安装的 APK
     id 'com.android.application'
 }
 
 android {
+    // 应用程序的唯一命名空间，替代原来 Manifest 中的 package 属性，用于生成内部通信的 R 类和 BuildConfig 类
     namespace 'net.micode.notes'
-    // 尽量使用较低的编译版本来适配旧代码，但又不能太低导致现代 AS 拒绝编译
+    // 告诉系统该项目是针对哪个最新 Android 版本编译和构建的。这里指定为 Android 13（API 33），尽量使用高版本保证一些新特性代码不报错
     compileSdkVersion 33
 
+    // 允许项目继续使用已被废弃移除的传统 Apache HTTP 客户端库。这在老旧项目中（比如大量使用 HttpClient）非常常见
     useLibrary 'org.apache.http.legacy'
     
     defaultConfig {
+        // 项目正式输出时的“身份证号”，无论你手机上什么名字，全靠这个去唯一标识该应用
         applicationId "net.micode.notes"
-        minSdkVersion 16 // 早期设备支持
+        // 支持安装该应用的最低 Android 系统版本。16 代表 Android 4.1（Jelly Bean）
+        minSdkVersion 16 // 早期设备支持，能够照顾到极大部分的老手机
+        // 目标 Android 版本。告诉系统：这是专门针对 API 33 测试过的应用，请放心用最新机制运行，不需要做老系统兼容
         targetSdkVersion 33
+        // 数字型的内部版本编号，在应用市场用于检测是否可以升级（必须比前一个发布版本的数值大）
         versionCode 1
+        // 提供给用户看的展示用版本名字，比如“1.0 正式版”
         versionName "1.0"
     }
 
     // 这一步是灵魂！告诉 Gradle，源码不在现代的 src/main/java 下，而就在 src 下
     sourceSets {
         main {
+            // 指定清单文件对应的真实相对路径
             manifest.srcFile 'AndroidManifest.xml'
+            // 把默认的 Java 代码存放路径强行指回项目根部的 src 文件夹下
             java.srcDirs = ['src']
+            // 把老旧系统存放配置资源的地方指回 src 文件夹下
             resources.srcDirs = ['src']
+            // 把用于 IPC 进程间通信定义的文件指向 src
             aidl.srcDirs = ['src']
+            // 把用来做底层图片运算和高级渲染的 Renderscript 代码指向 src
             renderscript.srcDirs = ['src']
+            // 把存储界面布局（layout）、图片、键值对的资源文件夹明确指引到 res 目录下
             res.srcDirs = ['res']
+            // 把存放原生大文件或独立资产包的目录指向 assets 下
             assets.srcDirs = ['assets']
         }
     }
 }
 
+// 这里用来声明一切该应用需要依赖（借用）的第三方功能包以及插件库
 dependencies {
     // 暂时不添加任何现代依赖，看看原生代码能否编译过
+    // 引入 AndroidX 核心库，使得应用可以在不同的系统版本上使用统一并且风格一致的通用控件特性集合。
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
+    // 引入谷歌提供的 Material Design 设计库包，里面有现代化并且充满立体质感的质感风格组件，用于翻新老旧程序的界面
     implementation 'com.google.android.material:material:1.8.0'
 }
