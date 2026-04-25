@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         // 依然保持我们指定的 7.4.2 插件版本
-        classpath "com.android.tools.build:gradle:7.4.2"
+        classpath 'com.android.tools.build:gradle:8.13.0'
     }
 }
 
