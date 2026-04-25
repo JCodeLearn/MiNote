@@ -7,3 +7,8 @@ project.properties
 .settings/
 .classpath
 .project
+
+.gradle/
+.idea/
+app/build/
+local.properties
