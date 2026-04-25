@@ -17,4 +17,12 @@
 
 <resources>
     <color name="user_query_highlight">#335b5b5b</color>
+    <!-- 新增： -->
+    <color name="note_bg_yellow">#FFFFCC</color>
+    <color name="note_bg_blue">#CCE5FF</color>
+    <color name="note_bg_white">#FFFFFF</color>
+    <color name="note_bg_green">#D4EDDA</color>
+    <color name="note_bg_red">#F8D7DA</color>
+    <color name="checkbox_border">#555555</color>
+    <color name="text_color_primary">#212121</color>
 </resources>

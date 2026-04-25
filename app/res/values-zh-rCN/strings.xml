@@ -119,6 +119,12 @@
     <string name="search">便签</string>
     <string name="datetime_dialog_ok">设置</string>
     <string name="datetime_dialog_cancel">取消</string>
+    <!-- 新增：分享为图片 -->
+    <string name="menu_share_image">分享为图片</string>
+    <string name="share_note_image_title">分享笔记图片</string>
+    <string name="share_note_image_start">已生成图片，选择分享方式</string>
+    <string name="error_share_image">图片生成失败，请重试</string>
+    <string name="error_empty_note">笔记内容为空，无法生成图片</string>
     <plurals name="search_results_title">
         <item quantity="other"><xliff:g id="NUMBER">%1$s</xliff:g> 条符合“<xliff:g id="SEARCH">%2$s</xliff:g>”的搜索结果</item>
     </plurals>

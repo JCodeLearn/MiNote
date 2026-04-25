@@ -73,6 +73,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// 新增：
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import androidx.core.content.FileProvider;
+import net.micode.notes.tool.NoteImageRenderer;
 
 public class NoteEditActivity extends Activity implements OnClickListener,
         NoteSettingChangedListener, OnTextViewChangeListener {
@@ -570,6 +579,10 @@ public class NoteEditActivity extends Activity implements OnClickListener,
                 getWorkingText();
                 sendTo(this, mWorkingNote.getContent());
                 break;
+            // 新增：
+            case R.id.menu_share_image:
+                shareNoteAsImage();
+                break;
             case R.id.menu_send_to_desktop:
                 sendToDesktop();
                 break;
@@ -901,5 +914,60 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
     private void showToast(int resId, int duration) {
         Toast.makeText(this, resId, duration).show();
+    }
+
+    /**
+     * 新增：将当前笔记内容渲染为图片，并通过系统分享面板发送。
+     */
+    private void shareNoteAsImage() {
+        // 1. 保存当前编辑的笔记内容
+        saveNote();
+
+        // 2. 获取笔记内容和样式参数
+        String content = mWorkingNote.getContent();
+        int bgColorId = mWorkingNote.getBgColorId();
+        int fontSizeId = mFontSizeId;
+        boolean isCheckList = (mWorkingNote.getCheckListMode() == TextNote.MODE_CHECK_LIST);
+
+        // 3. 调用工具类生成图片
+        Bitmap bitmap = NoteImageRenderer.renderNoteToImage(this, content,
+                bgColorId, fontSizeId, isCheckList);
+        if (bitmap == null) {
+            showToast(R.string.error_empty_note);
+            return;
+        }
+
+        // 4. 将图片保存到缓存目录，并通过 FileProvider 获取 URI
+        File cacheDir = new File(getCacheDir(), "share_images");
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+        }
+        String fileName = "note_" + System.currentTimeMillis() + ".png";
+        File imageFile = new File(cacheDir, fileName);
+        try {
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            Log.e(TAG, "shareNoteAsImage: failed to save image", e);
+            showToast(R.string.error_share_image);
+            return;
+        }
+
+        // 5. 通过 FileProvider 生成 content://... URI
+        Uri imageUri = FileProvider.getUriForFile(this,
+                getPackageName() + ".fileprovider", imageFile);
+
+        // 6. 发送分享 Intent
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("image/png");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(shareIntent,
+                getString(R.string.share_note_image_title)));
+
+        // 7. 可选：显示提示
+        showToast(R.string.share_note_image_start);
     }
 }
