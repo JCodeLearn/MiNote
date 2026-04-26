@@ -95,7 +95,7 @@
     <application
         android:icon="@drawable/icon_app"
         android:label="@string/app_name" >
-        <!-- activity（列表页）四大组件之一
+        <!-- activity（列表页）
             name：对应的 Java 类.
             exported：允许系统桌面或其他应用可以启动该界面.
             configChanges：告诉系统：当键盘弹出/隐藏、屏幕旋转、屏幕尺寸变化时，不要销毁并重启这个 Activity.
@@ -135,14 +135,8 @@
             </intent-filter>
         </activity>
 
-        <!-- activity 四大组件之一
+        <!-- activity
             便签编辑页面
-                * 实现的功能：便签的查看和编辑，负责接收系统的全局搜索请求和从其他功能跳转过来的数据.
-                ** exported：set as true，允许系统的其他应用或组件（包括全局搜索、快捷方式等）直接调用并启动这个页面
-                ** configChanges：当键盘隐藏/显示、屏幕横竖屏切换、屏幕尺寸发生变化时，不要销毁重建 Activity，而是将这些变化交由 Activity 内部的 onConfigurationChanged() 方法自行处理，这样可以避免编辑中途数据丢失
-                ** launchMode：Android 会用栈的方式来管理 activity 事件，每一个标签页，列表页都可以视作一个事件，那这些事件的先后顺序，退出去之后又返回到哪一事件，这个过程可以规定，如果将 launchMode 设置成 singleTop，那么采取的是同类型页面最顶覆盖的方式，用的同一块模块，但是数据直接覆盖，
-                    标准或者默认的方式是无论是否为同类型的页面（事件），都是直接堆叠，而非覆盖.
-                **
         -->
         <activity
             android:name=".ui.NoteEditActivity"
@@ -151,29 +145,6 @@
             android:launchMode="singleTop"
             android:theme="@style/NoteTheme" >
 
-            <!-- intent-filter
-                意图过滤器
-                * 能帮人查看便签
-                  告诉 Android 系统：“别管是谁（可能是列表首页，也可能是桌面微件，甚至是其他APP），只要他的请求符合我牌子上写的条件，你就可以把他往我这领。”
-                ** VIEW 是 Android 系统内置的一个标准动作，意思是“查看”，本页面支持“查看”操作。如果外面有人大喊一声“我想查看一下某样东西”，系统就会注意到这个页面。
-                ** 类别分类（必备通行证）。DEFAULT Category 是想要参与“隐式启动”的页面必带的属性。所谓的“隐式启动”，就是调用方没有指名道姓说“我要打开 NoteEditActivity”，
-                    而是泛泛地说“谁能帮我查个东西”。加了这行，就等于对系统说：“我愿意接这种不指名道姓的派单任务”。如果不加这行，系统就会把这个页面屏蔽掉，除非调用方确切点出这个页面的包名和类名。
-                ** 数据类型约束（处理什么）。这是最关键的过滤条件。
-                     mimeType：代表数据的格式
-                     vnd：意思是 Vendor（厂商自定义），表明这不是系统自带的标准类型（如 image/png），而是小米便签开发者自己造的类型。
-                     cursor.item：代表这是一条从数据库里查出来的“单条记录”。
-                     text_note：代表“普通的纯文本便签”
-                   光说能“查看”范围太广了，系统不可能把看照片的请求也发过来。这行规定死了：我只负责查看“单条纯文本便签”类型的数据。
-                ** 数据类型扩展。又加了一个条件。也就是说，我不光能查看纯文本便签，如果有人扔过来一条格式为 call_note（代表“通话录音/通话记录生成的记事”）的数据，我也能接单处理。
-            -->
-            <!--
-                引用场景示例
-                    当你在 Android 桌面上点击了一个“小米便签的桌面插件（Widget）”里的某一条便签。桌面插件的代码根本不知道便签编辑页叫什么名字，
-                        它只是向 Android 系统全服广播了一句话： “系统大哥，我这有个请求，动作是 VIEW（查看），数据类型是 vnd.android.cursor.item/text_note，
-                        谁能处理？”
-                    Android 系统接到广播，立刻去翻翻各个 APP 的清单文件（AndroidManifest.xml）。结果一看，哎！NoteEditActivity
-                        门口挂的牌子（intent-filter）完美匹配这两个条件，于是系统就会立刻拉起这个编辑页面，并把便签数据塞给它让你看。
-            -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -181,15 +152,6 @@
                 <data android:mimeType="vnd.android.cursor.item/call_note" />
             </intent-filter>
 
-            <!--
-                意图过滤器
-                * 能帮人新建后修改便签
-                ** INSERT_OR_EDIT 是 Android 系统的标准动作，意思是“插入（新建）或编辑”。这行告诉 Android 系统，本页面不仅能给用户看，还支持“写”。
-                    如果系统里其他地方（例如联系人APP、桌面快捷方式等）喊出“我要新建一个东西或者修改一个现有的东西”，系统就会注意到这块告示牌。
-                ** 类别分类（必备通行证）。和之前一样，DEFAULT 表示它愿意接收没点名道姓的“隐式启动”请求。不加这行，即使别人大喊“我要新建便签”，这页面也听不到。加上它，表示“只要不指定找谁，这种杂活我就接”。
-                ** understood
-                ** understood
-            -->
             <intent-filter>
                 <action android:name="android.intent.action.INSERT_OR_EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -197,110 +159,36 @@
                 <data android:mimeType="vnd.android.cursor.item/call_note" />
             </intent-filter>
 
-            <!--
-                意图过滤器
-                * 我能帮你做搜索相关的服务
-                ** SEARCH 是 Android 系统标准动作之一，专职处理搜索请求。这行就是在告诉 Android 系统，本页面自带“搜索查询”的功能。如果用户在任何地方发出找东西的搜索指令（且匹配到了本应用），系统就可以把搜索任务派发到这个页面来执行。
-                ** understood
-            -->
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!--
-                意图过滤器
-                * meta-data（元数据）是用来给 Android 系统补充提供一些额外的键值对配置信息的。就像是在个人简历的边角贴了一张便利贴。
-                    这段 meta-data 是专门服务于刚刚上面的“搜索登记”的，可以说是“搜索功能的附件说明书”。
-                ** 指定这个元数据的用途（Key）。android.app.searchable 是 Android 系统中一条约定的“暗号”。
-                    它告诉系统，下面挂载的信息是关于**“搜索界面的具体配置”**的。当系统需要展示搜索框时，就会专门来找带有这个名字的元数据。
-                ** 指向具体的配文件（Value）。这里引用的就是我们之前讲过的逻辑路径 @xml/searchable，它指向了项目中 app/res/xml/searchable.xml 这样一个真实文件。
-                    系统一看，“哦，你是用来配置搜索界面的啊！那具体长什么样呢？”。然后顺着这个地址找过去，打开那个文件，就会发现里面写了诸如：搜索框里的提示文字是“搜索便签”、搜索时需要不要显示语音话筒图标等更详细的设定。
-            -->
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
 
-        <!-- provider 四大组件之一
-            * 内容提供者，Content Providr
-            ** understood
-            ** 指定数据接口的唯一“域名”（Authority）。这和网站的域名非常像。
-                这是 Content Provider 最重要的属性。在 Android 手机里有成千上万个应用，如果别人想读写你便签的数据，别人需要怎么定位到你呢？
-                靠的就是这个 authorities。 当系统的其他组件（甚至其他 APP）想要访问便签的数据时，他们只需要写一串像网址一样的 URI：content://micode_notes/note。
-                系统一看到 micode_notes 这个前缀，就会直接把数据存取请求派发给我们的 NotesProvider 来处理。
-        -->
         <provider
             android:name="net.micode.notes.data.NotesProvider"
             android:authorities="micode_notes"
             android:multiprocess="true" />
 
-        <!-- receiver 四大组件之一：Broadcast Receiver（广播接收器） 桌面小组件
-            * 在小米便签这个特定的场景下，这个接收器不仅用来听广播，它还充当了“桌面小部件（App Widget）”的提供者。
-                因为在 Android 系统中，桌面小部件的创建、更新、销毁，底层全都是靠系统发送“广播”来实现的。
-            ** understood
-            ** 为这个组件取个名字标签
-                当你长按手机桌面，打开“添加桌面小工具”的列表时，你会看到里面有成百上千的小插件。你怎么知道哪一个是小米便签的 2x2 版本？
-                靠的就是这里。系统会读取 @string/app_widget2x2 里写的文字（比如界面上会显示成“便签(2x2)”），展示给用户选择。
-            ** 是否允许对外敞开大门（接收外部广播）
-                因为便签小部件是被贴在**手机系统桌面（Launcher）**上的，并不在便签应用自己的界面里。所以，“小部件被放到了桌面”、“小部件需要刷新”这些广播，
-                都是桌面那个外部应用发送过来的。把 exported 设为 true，就表示：“我的天线不仅接收自家人发的消息，也授权接收外面（Android 桌面系统）发来的指令”。
-                如果不填 true，桌面就无法挂载你的便签小部件了。
-        -->
-        <!--
-            应用场景示例：
-                你觉得每次想看买菜清单都要点开便签APP太麻烦了，于是你想把这篇便签“钉”在桌面上。
-                你长按桌面，滑到“便签(2x2)”（通过 android:label 找到的），把它拖到桌面上。
-                这时，Android 系统桌面立刻全服广播一句：“有人把某某小部件放到桌面啦！谁负责的赶紧去初始化！”
-                由于 exported="true" 在敞开大门监听着，请求立刻被送到了 .widget.NoteWidgetProvider_2x 手里，
-                这个 Java 类马上写好渲染代码，你的桌面上就成功出现了一个漂亮的 2x2 尺寸的便签小方块！
-        -->
         <receiver
             android:name=".widget.NoteWidgetProvider_2x"
             android:label="@string/app_widget2x2"
             android:exported="true">
 
-            <!--
-                意图过滤器
-                * 前面说过，广播接收器就是一根竖起来的天线，那这个过滤器就是用来告诉系统：“我的天线只对这三种频道的广播感兴趣，其他的杂音请不要来烦我”。
-                ** 更新频道。这是 Android 系统规定的小部件标准广播
-                    当发生以下情况时：
-                    1. 你刚刚把小部件拖到桌面上时。
-                    2. 系统到了预先设定该刷新小部件状态的时间间隔时。
-                    3. 手机开机或者系统桌面崩溃后重启时。 桌面系统就会发出这个 APPWIDGET_UPDATE 广播。大喊一声：“喂！小米便签的小部件负责人们，
-                    该去拿最新数据重新画一下你们在这个桌面上显示的内容啦！”。
-                ** 删除频道
-                    当你在桌面上长按这个便签小方块，把它拖到顶部的垃圾桶“移除”时，桌面也会发一个 APPWIDGET_DELETED 的广播。大喊一声：“喂！刚刚有个用户把你家的某一个小部件删掉啦！
-                    你们内部看看有什么垃圾数据需要清理不？”接收到后，代码里就可以执行一些诸如“解绑数据”、“释放内存”的善后工作。
-                ** 隐私模式切换频道，这是一个非常具有“MIUI特色”或安全特征的自定义广播。
-                    试想一个场景：你的某篇便签（比如记录了银行卡密码）在 APP 里被加了“私密锁”。但是你这个便签刚好被钉在了手机桌面的小部件上，所有人一开手机就能看到！
-                    这行配置的作用就是：一旦用户在系统里开启或关闭了“隐私模式/私密锁”，系统就会发送这个广播。
-                    这个接收器听到后，立马让桌面上的小部件“打上马赛克”或者显示“需要解锁”的占位图，防止隐私直接泄露在桌面上。
-            -->
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
                 <action android:name="android.intent.action.PRIVACY_MODE_CHANGED" />
             </intent-filter>
 
-            <!--
-                * 声明元数据。作用是给系统提供额外说明
-                ** 指定元数据的用途（Key）。这是一个系统内置的标志口令。
-                    这行暗号告诉系统：“我不仅是个普通的广播接收器，我还是一个正式编制的桌面应用小部件（App Widget）提供者！”
-                    系统识别到这个名字，就会在“添加小部件”面板里给它分配一个展示席位，并知道要如何与它交互。
-                ** 指向具体的说明书文件（Value）。
-                    系统知道了你是个小部件，接着就会问：“既然是小部件，那你占据桌面的几行几列？默认刷新频率是多少毫秒？
-                    你画在桌面上的初始布局界面（layout）长什么样？” 这些零碎的配置参数不可能全堆在 AndroidManifest 这里写，
-                    所以它通过地址 @xml/widget_2x_info 引到了单独的文件里（即 app/res/xml/widget_2x_info.xml）。
-                    系统会顺着地址打开那份文件，读取里面的配置去渲染这个 2x2 尺寸的便签小块。
-            -->
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_2x_info" />
         </receiver>
-        <!--
-            功能同上一组件，桌面小组件
-        -->
         <receiver
             android:name=".widget.NoteWidgetProvider_4x"
             android:label="@string/app_widget4x4"
@@ -317,47 +205,17 @@
                 android:resource="@xml/widget_4x_info" />
         </receiver>
 
-        <!-- receiver 四大组件之一 Broadcast Receiver（广播接收器）闹钟功能实现 —— 接收手机开启重启时的广播信息
-            * 我们在最前面的“权限申请区”讲过，Android 系统的闹钟（AlarmManager）是在内存里运行的。手机一旦关机或重启，之前设置的所有便签提醒时间全都会被系统遗忘。
-                这就需要我们在手机重新开机时，把数据库（应用的数据库）里的提醒任务重新挂载到系统中。这段代码就是实现这个功能的关键抓手！
-            ** understood
-            ** understood
-        -->
         <receiver android:name=".ui.AlarmInitReceiver" android:exported="true" >
-            <!-- 意图过滤器
-                * 监听系统的“开机完成”广播频道
-                ** BOOT_COMPLETED 是 Android 系统中一个极其重要且标准的系统广播。当手机按下电源键，系统底层代码加载完毕，桌面准备就绪的那一刻，
-                    Android 系统会向全手机所有的 APP 大喊一声：“各位，**开机完成（BOOT_COMPLETED）**啦！”。
-            -->
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <!-- receiver 四大组件之一 Broadcast Receiver（广播接收器）闹钟功能实现 —— 接收闹钟提醒的广播信息
-            * 闹钟提醒服务是系统调用的一部分，在 androiod 中，则是通过广播的机制来实现应用闹钟功能，系统广播了，那应用总得监听吧，
-                但是应用不总是在内存中的，所谓系统广播机制，也就是观察者模式，用的应该是注册的方式，所以说系统广播时，会去查看先前的系统记录然后唤醒该组件
-            ** understood
-            ** 使该组件运行在独立的一个子进程中。
-        -->
         <receiver
             android:name="net.micode.notes.ui.AlarmReceiver"
             android:process=":remote" >
         </receiver>
 
-        <!-- 界面 UI
-            * Receiver 组件作为后台进程，是没有画面的，具体画面，弹窗的工作则交由 AlarmAlertActivity 组件来渲染.
-            ** understood
-            ** 界面的标题名称。依然是“小米便签”。如果在系统近期任务列表里看到它，它的名字就是这个。
-            ** 启动模式：全局单例模式（独狼模式）
-                我们之前讲过 singleTop 是在同一个任务栈顶部复用。而这个 singleInstance 更霸道：它强迫 Android 系统为它单独开辟一个全新的、
-                绝对纯洁的专属任务栈，并且这个栈里有且只能有它这一个完整的页面！
-
-                为什么要这样做？ 设想一下，如果弹出了“闹钟 A”，你还没关掉它，紧接着“闹钟 B”也到点触发了。如果没有单例限制，系统可能会弹出两个重叠的警报框。
-                加上这个属性后，系统保证全手机永远只有一个闹钟警报框存活，无论按几次闹钟，都只是在这个唯一的弹窗里刷新内容而已，防止屏幕被无数个闹钟弹窗卡死。
-                同时，单独开辟栈意味着无论你当前在玩游戏还是看视频，这个闹钟都能强行且干净地覆盖在最上层，而不干扰原本应用的栈结构。
-            ** 设定界面的视觉主题样式。这里没有用小米便签自己的主题，而是直接借用了 Android 系统自带的底层主题。
-        -->
         <activity
             android:name=".ui.AlarmAlertActivity"
             android:label="@string/app_name"
@@ -365,13 +223,6 @@
             android:theme="@android:style/Theme.Holo.Wallpaper.NoTitleBar" >
         </activity>
 
-        <!-- 界面 UI
-           * 小米便签的设置页面
-           ** understood
-           ** 界面的标题名称
-           ** 设置 android 任务栈模式，采用栈顶复用模式
-           ** 界面的视觉主题设置
-        -->
         <activity
             android:name="net.micode.notes.ui.NotesPreferenceActivity"
             android:label="@string/preferences_title"
@@ -379,22 +230,11 @@
             android:theme="@android:style/Theme.Holo.Light" >
         </activity>
 
-        <!-- 四大组件之一，提供具体服务 专门用来处理不需要界面、但又耗时很长的工作。
-            * 谷歌任务（Google Task）云端同步服务，后台进程
-            ** understood
-            ** 不允许被其他应用调用
-
-        -->
         <service
             android:name="net.micode.notes.gtask.remote.GTaskSyncService"
             android:exported="false" >
         </service>
 
-        <!-- 给整个小米便签应用设置一些规定
-            * 对整个 Application 均有效
-            ** 指定配置的用途（Key）。这是一个 Android 系统的内置常量口令。这行暗号是在回答系统的一个问题：“在你们这个小米便签 APP 里，谁是全局默认的搜索专员？”
-            ** 提供具体的值（Value）。这行就是给系统的答案：“如果我们 APP 要处理搜索任务，请一律交给 .ui.NoteEditActivity 这个界面去办！”
-        -->
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".ui.NoteEditActivity" />
