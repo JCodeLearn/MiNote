@@ -1,27 +1,24 @@
-// 1. 插件声明块：必须位于最外层，用于引入 SonarQube 插件
-plugins {
-    id "org.sonarqube" version "7.2.3.7755"
-}
-
-// buildscript 块：配置 Gradle 脚本自身执行所需要的依赖和仓库
+// 1. buildscript 必须放在绝对的第一位！
 buildscript {
     repositories {
-        // 优先使用阿里云镜像源，大幅提升国内插件下载速度
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
 
-        // 官方源作为备用
         google()
         mavenCentral()
     }
     dependencies {
-        // Android 项目核心构建插件
         classpath "com.android.tools.build:gradle:7.4.2"
     }
 }
 
-// 2. SonarCloud 配置块：必须位于最外层，不能嵌套在 buildscript 内部
+// 2. plugins 块紧跟在 buildscript 之后
+plugins {
+    id "org.sonarqube" version "7.2.3.7755"
+}
+
+// 3. sonar 配置块同样放在外层
 sonar {
     properties {
         property "sonar.projectKey", "JCodeLearn_MiNote"
@@ -29,10 +26,9 @@ sonar {
     }
 }
 
-// allprojects 块：配置应用于当前项目及其所有子模块（如 app 模块）的仓库
+// 4. allprojects 块保持在下方
 allprojects {
     repositories {
-        // 为所有模块配置阿里云镜像，确保第三方库极速下载
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/public' }
 
