@@ -44,11 +44,14 @@ android {
             assets.srcDirs = ['assets']
         }
     }
+    buildFeatures {
+        renderScript true
+        aidl true
+    }
 }
 
 // 这里用来声明一切该应用需要依赖（借用）的第三方功能包以及插件库
 dependencies {
-    // 暂时不添加任何现代依赖，看看原生代码能否编译过
     // 引入 AndroidX 核心库，使得应用可以在不同的系统版本上使用统一并且风格一致的通用控件特性集合。
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
