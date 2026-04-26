@@ -239,4 +239,5 @@
             android:name="android.app.default_searchable"
             android:value=".ui.NoteEditActivity" />
     </application>
+
 </manifest>
