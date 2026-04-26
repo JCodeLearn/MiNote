@@ -1,27 +1,32 @@
+// buildscript 块的作用是配置 Gradle 脚本自身执行所需要的依赖和仓库（也就是“构建工具”自身的运行环境）
 buildscript {
+    // repositories 声明了用来下载插件或库的网络仓库地址
     repositories {
-        // 1. 优先使用阿里云的国内镜像源（速度起飞的核心）
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        // 1. 优先使用阿里云的国内镜像源（速度起飞的核心），用来代替缓慢的国外源
+        maven { url 'https://maven.aliyun.com/repository/google' } // Google 仓库代理
+        maven { url 'https://maven.aliyun.com/repository/public' } // Maven Central 等核心库代理
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' } // Gradle 插件库代理
 
         // 2. 将官方源作为备用（如果阿里云偶尔抽风没同步到最新包，再去官方找）
-        google()
-        mavenCentral()
+        google() // Google 官方 Android 相关的仓库
+        mavenCentral() // 全球最大的 Java 第三方库公开仓库
     }
+    // dependencies 声明构建脚本需要依赖的插件
     dependencies {
-        // 依然保持我们指定的 7.4.2 插件版本
-        classpath 'com.android.tools.build:gradle:8.13.0'
+        // 依然保持我们指定的 7.4.2 插件版本。这是用来构建和打包 Android 项目的核心 Gradle 插件
+        classpath "com.android.tools.build:gradle:7.4.2"
     }
 }
 
+// allprojects 块里配置的信息会应用到当前项目以及其所有子模块（比如 app 模块）中
 allprojects {
+    // 这里的 repositories 声明了具体项目代码中所需的第三方库（例如 app/build.gradle 的 dependencies 里引用的库）从哪里下载
     repositories {
-        // 同样的，给所有子模块也配置上阿里云镜像
+        // 同样的，给所有子模块也配置上阿里云镜像，保证应用代码需要的依赖能快速下载
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/public' }
 
-        google()
-        mavenCentral()
+        google() // Google 官方备用
+        mavenCentral() // Maven Central 官方备用
     }
 }
