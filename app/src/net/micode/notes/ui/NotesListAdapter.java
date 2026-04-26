@@ -31,6 +31,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 
+/**
+ * 便签列表的数据适配器，继承自 CursorAdapter。
+ * 负责绑定数据库游标查询出的数据到列表项（NotesListItem）上，
+ * 同时提供了管理和处理批量多选模式（ChoiceMode）的方法。
+ */
 public class NotesListAdapter extends CursorAdapter {
     private static final String TAG = "NotesListAdapter";
     private Context mContext;
@@ -38,11 +43,17 @@ public class NotesListAdapter extends CursorAdapter {
     private int mNotesCount;
     private boolean mChoiceMode;
 
+    /**
+     * 桌面的便签小部件的属性
+     */
     public static class AppWidgetAttribute {
         public int widgetId;
         public int widgetType;
     };
 
+    /**
+     * 构造函数
+     */
     public NotesListAdapter(Context context) {
         super(context, null);
         mSelectedIndex = new HashMap<Integer, Boolean>();
@@ -50,11 +61,17 @@ public class NotesListAdapter extends CursorAdapter {
         mNotesCount = 0;
     }
 
+    /**
+     * 实例化一个新的列表项 View
+     */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return new NotesListItem(context);
     }
 
+    /**
+     * 为给定的列表项视图绑定数据
+     */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         if (view instanceof NotesListItem) {
@@ -64,20 +81,32 @@ public class NotesListAdapter extends CursorAdapter {
         }
     }
 
+    /**
+     * 设置给定位置处的选中状态（多选模式）
+     */
     public void setCheckedItem(final int position, final boolean checked) {
         mSelectedIndex.put(position, checked);
         notifyDataSetChanged();
     }
 
+    /**
+     * 是否处于多选模式
+     */
     public boolean isInChoiceMode() {
         return mChoiceMode;
     }
 
+    /**
+     * 进入或退出多选模式
+     */
     public void setChoiceMode(boolean mode) {
         mSelectedIndex.clear();
         mChoiceMode = mode;
     }
 
+    /**
+     * 全选或全不选
+     */
     public void selectAll(boolean checked) {
         Cursor cursor = getCursor();
         for (int i = 0; i < getCount(); i++) {
@@ -89,6 +118,9 @@ public class NotesListAdapter extends CursorAdapter {
         }
     }
 
+    /**
+     * 返回所有被选中列表项的 ID 集合
+     */
     public HashSet<Long> getSelectedItemIds() {
         HashSet<Long> itemSet = new HashSet<Long>();
         for (Integer position : mSelectedIndex.keySet()) {
@@ -105,6 +137,9 @@ public class NotesListAdapter extends CursorAdapter {
         return itemSet;
     }
 
+    /**
+     * 获取所有选中的含桌面小部件的列表项集合，用于通知小部件更新或删除
+     */
     public HashSet<AppWidgetAttribute> getSelectedWidget() {
         HashSet<AppWidgetAttribute> itemSet = new HashSet<AppWidgetAttribute>();
         for (Integer position : mSelectedIndex.keySet()) {
@@ -128,6 +163,9 @@ public class NotesListAdapter extends CursorAdapter {
         return itemSet;
     }
 
+    /**
+     * 选中的个数
+     */
     public int getSelectedCount() {
         Collection<Boolean> values = mSelectedIndex.values();
         if (null == values) {
@@ -143,11 +181,17 @@ public class NotesListAdapter extends CursorAdapter {
         return count;
     }
 
+    /**
+     * 是否全选了
+     */
     public boolean isAllSelected() {
         int checkedCount = getSelectedCount();
         return (checkedCount != 0 && checkedCount == mNotesCount);
     }
 
+    /**
+     * 给定位置对应的项是否被选定
+     */
     public boolean isSelectedItem(final int position) {
         if (null == mSelectedIndex.get(position)) {
             return false;

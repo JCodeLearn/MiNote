@@ -25,7 +25,11 @@ import net.micode.notes.data.Notes;
 import net.micode.notes.data.Notes.NoteColumns;
 import net.micode.notes.tool.DataUtils;
 
-
+/**
+ * 封装且表示便签列表中单项数据的实体类。
+ * 通过 Cursor 构造，从数据库获取单条便签的各种属性（如修改时间、内容片段、是否具有提醒等），
+ * 并解析特定的状态（如它是否位于文件夹后的第一项）。
+ */
 public class NoteItemData {
     static final String [] PROJECTION = new String [] {
         NoteColumns.ID,
@@ -55,27 +59,39 @@ public class NoteItemData {
     private static final int WIDGET_ID_COLUMN             = 10;
     private static final int WIDGET_TYPE_COLUMN           = 11;
 
+    // 便签在数据库中的唯一 ID
     private long mId;
+    // 便签的闹钟提醒日期
     private long mAlertDate;
+    // 背景色的资源 ID 标识
     private int mBgColorId;
     private long mCreatedDate;
     private boolean mHasAttachment;
+    // 便签最近一次被修改的时间
     private long mModifiedDate;
+    // 若为文件夹，该字段代表包含的便签总数
     private int mNotesCount;
+    // 父文件夹 ID
     private long mParentId;
+    // 便签内容的预览小段文本
     private String mSnippet;
+    // 该项的类型：便签、文件夹或者系统内置元素
     private int mType;
     private int mWidgetId;
     private int mWidgetType;
     private String mName;
     private String mPhoneNumber;
 
+    // 辅助 UI 绘制用的位置标志：是否是最后一项
     private boolean mIsLastItem;
     private boolean mIsFirstItem;
     private boolean mIsOnlyOneItem;
     private boolean mIsOneNoteFollowingFolder;
     private boolean mIsMultiNotesFollowingFolder;
 
+    /**
+     * 根据数据库游标（Cursor）初始化并装配便签项的数据
+     */
     public NoteItemData(Context context, Cursor cursor) {
         mId = cursor.getLong(ID_COLUMN);
         mAlertDate = cursor.getLong(ALERTED_DATE_COLUMN);
@@ -109,6 +125,9 @@ public class NoteItemData {
         checkPostion(cursor);
     }
 
+    /**
+     * 判断并记录当前条目的位置状态属性，用于在 ListView 中动态决定不同情况下的列表项背景圆角等样式
+     */
     private void checkPostion(Cursor cursor) {
         mIsLastItem = cursor.isLast() ? true : false;
         mIsFirstItem = cursor.isFirst() ? true : false;

@@ -20,7 +20,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+/**
+ * 响应闹钟提醒事件的广播接收器
+ * 接收到由 AlarmManager 触发的对应广播后，启动 AlarmAlertActivity 弹窗进行提醒
+ */
 public class AlarmReceiver extends BroadcastReceiver {
+
+    /**
+     * 当接收到闹钟触发广播时的回调
+     * 将目标类修改为 AlarmAlertActivity 并拉起它以展示提示界面
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         intent.setClass(context, AlarmAlertActivity.class);

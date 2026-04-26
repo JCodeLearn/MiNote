@@ -48,6 +48,10 @@ import net.micode.notes.data.Notes.NoteColumns;
 import net.micode.notes.gtask.remote.GTaskSyncService;
 
 
+/**
+ * 便签设置界面 Activity，继承自 PreferenceActivity。
+ * 提供查看和更改同步账号、查看上次同步时间等功能。
+ */
 public class NotesPreferenceActivity extends PreferenceActivity {
     public static final String PREFERENCE_NAME = "notes_preferences";
 
