@@ -85,8 +85,17 @@ import android.content.ContentValues;
 import android.widget.Button;
 import java.util.ArrayList;
 
+/**
+ * 便签编辑页面，是一个核心 Activity。
+ * 支持文本模式和清单模式的内容编辑，同时负责处理提醒、背景颜色、字体大小的设置。
+ * 并作为中转管理便签在数据库中的更新（通过 WorkingNote 模型）。
+ */
 public class NoteEditActivity extends Activity implements OnClickListener,
         NoteSettingChangedListener, OnTextViewChangeListener {
+
+    /**
+     * UI 节点缓存，避免重复 findViewById 带来的开销，包含修改时间、提醒图标、提醒时间等。
+     */
     private class HeadViewHolder {
         public TextView tvModified;
 
@@ -133,18 +142,24 @@ public class NoteEditActivity extends Activity implements OnClickListener,
 
     private static final String TAG = "NoteEditActivity";
 
+    // 头部视图的持有者对象
     private HeadViewHolder mNoteHeaderHolder;
 
+    // 头部面板视图
     private View mHeadViewPanel;
 
+    // 笔记背景色选择面板
     private View mNoteBgColorSelector;
 
+    // 字体大小选择面板
     private View mFontSizeSelector;
 
+    // 核心编辑器控件
     private EditText mNoteEditor;
 
     private View mNoteEditorPanel;
 
+    // 管理便签数据读取、修改、存储的核心业务模型对象
     private WorkingNote mWorkingNote;
 
     private SharedPreferences mSharedPrefs;

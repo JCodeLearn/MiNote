@@ -24,6 +24,10 @@ import net.micode.notes.data.Notes;
 import net.micode.notes.tool.ResourceParser;
 
 
+/**
+ * 2x 尺寸大小的便签桌面小部件 Provider。
+ * 继承自 NoteWidgetProvider，主要负责返回 2x 也就是 2列*?行的特定尺寸布局和背景资源。
+ */
 public class NoteWidgetProvider_2x extends NoteWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

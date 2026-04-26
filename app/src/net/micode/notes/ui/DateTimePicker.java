@@ -28,6 +28,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
 
+/**
+ * 自定义的日期与时间选择器布局，继承自 FrameLayout。
+ * 提供支持 12/24 小时制的日期和时间的联动滚动选择。
+ */
 public class DateTimePicker extends FrameLayout {
 
     private static final boolean DEFAULT_ENABLE_STATE = true;
@@ -62,6 +66,7 @@ public class DateTimePicker extends FrameLayout {
 
     private boolean mInitialising;
 
+    // 日期或时间发生变化时的回调接口
     private OnDateTimeChangedListener mOnDateTimeChangedListener;
 
     private NumberPicker.OnValueChangeListener mOnDateChangedListener = new NumberPicker.OnValueChangeListener() {

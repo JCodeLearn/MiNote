@@ -78,6 +78,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 
+/**
+ * 便签主界面 Activity
+ * 负责展示便签列表、管理文件夹与便签的交互（如新建、删除、移动和搜索）。
+ */
 public class NotesListActivity extends Activity implements OnClickListener, OnItemLongClickListener {
     private static final int FOLDER_NOTE_LIST_QUERY_TOKEN = 0;
 
@@ -91,14 +95,22 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
 
     private static final String PREFERENCE_ADD_INTRODUCTION = "net.micode.notes.introduction";
 
+    /**
+     * 当前列表视图状态枚举：
+     * NOTE_LIST - 主便签列表
+     * SUB_FOLDER - 子文件夹列表
+     * CALL_RECORD_FOLDER - 通话记录便签列表
+     */
     private enum ListEditState {
         NOTE_LIST, SUB_FOLDER, CALL_RECORD_FOLDER
     };
 
     private ListEditState mState;
 
+    // 负责后台异步查询数据库数据的 Handler
     private BackgroundQueryHandler mBackgroundQueryHandler;
 
+    // 便签列表的数据适配器
     private NotesListAdapter mNotesListAdapter;
 
     private ListView mNotesListView;
@@ -113,10 +125,12 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
 
     private TextView mTitleBar;
 
+    // 当前处于的文件夹 ID，如果在根目录则是 ID_ROOT_FOLDER
     private long mCurrentFolderId;
 
     private ContentResolver mContentResolver;
 
+    // 实现多选操作的模式回调
     private ModeCallback mModeCallBack;
 
     private static final String TAG = "NotesListActivity";

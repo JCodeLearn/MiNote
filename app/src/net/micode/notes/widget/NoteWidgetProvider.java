@@ -32,7 +32,12 @@ import net.micode.notes.tool.ResourceParser;
 import net.micode.notes.ui.NoteEditActivity;
 import net.micode.notes.ui.NotesListActivity;
 
+/**
+ * 桌面小部件提供者的抽象基类
+ * 继承自 AppWidgetProvider，负责处理便签相关桌面小部件的生命周期和视图更新
+ */
 public abstract class NoteWidgetProvider extends AppWidgetProvider {
+    // 数据库查询所需的列名，包括 ID、背景色 ID 和便签内容片段
     public static final String [] PROJECTION = new String [] {
         NoteColumns.ID,
         NoteColumns.BG_COLOR_ID,
@@ -45,6 +50,10 @@ public abstract class NoteWidgetProvider extends AppWidgetProvider {
 
     private static final String TAG = "NoteWidgetProvider";
 
+    /**
+     * 当桌面小部件被删除时调用
+     * 清除对应便签数据库记录中的 widget_id 绑定
+     */
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
         ContentValues values = new ContentValues();
@@ -57,6 +66,10 @@ public abstract class NoteWidgetProvider extends AppWidgetProvider {
         }
     }
 
+    /**
+     * 根据 widgetId 从数据库中获取绑定的便签信息
+     * 过滤掉被放入垃圾篓的便签
+     */
     private Cursor getNoteWidgetInfo(Context context, int widgetId) {
         return context.getContentResolver().query(Notes.CONTENT_NOTE_URI,
                 PROJECTION,
@@ -65,10 +78,18 @@ public abstract class NoteWidgetProvider extends AppWidgetProvider {
                 null);
     }
 
+    /**
+     * 更新给定的桌面小部件
+     * 默认不在访客模式（隐私模式）下更新
+     */
     protected void update(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         update(context, appWidgetManager, appWidgetIds, false);
     }
 
+    /**
+     * 核心更新方法，处理小部件的数据加载、视图填充和点击事件绑定
+     * 考虑到可能处于隐私模式，会隐藏具体便签内容
+     */
     private void update(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds,
             boolean privacyMode) {
         for (int i = 0; i < appWidgetIds.length; i++) {
@@ -124,9 +145,18 @@ public abstract class NoteWidgetProvider extends AppWidgetProvider {
         }
     }
 
+    /**
+     * 获取指定背景 ID 对应的小部件背景资源 ID，由子类具体实现
+     */
     protected abstract int getBgResourceId(int bgId);
 
+    /**
+     * 获取小部件的布局资源 ID，由子类具体实现
+     */
     protected abstract int getLayoutId();
 
+    /**
+     * 获取小部件的类型（如 2x，4x），由子类具体实现
+     */
     protected abstract int getWidgetType();
 }

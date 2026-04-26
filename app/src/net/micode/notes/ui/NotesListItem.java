@@ -30,6 +30,10 @@ import net.micode.notes.tool.DataUtils;
 import net.micode.notes.tool.ResourceParser.NoteItemBgResources;
 
 
+/**
+ * 单个便签项（或者文件夹）的控件布局容器，继承自 LinearLayout。
+ * 根据传入的 NoteItemData 数据动态设置标题、时间、闹钟图标、背景以及复选框。
+ */
 public class NotesListItem extends LinearLayout {
     private ImageView mAlert;
     private TextView mTitle;
@@ -48,6 +52,13 @@ public class NotesListItem extends LinearLayout {
         mCheckBox = (CheckBox) findViewById(android.R.id.checkbox);
     }
 
+    /**
+     * 将本视图组件绑定到相应的便签/文件夹数据上。
+     * @param context 上下文
+     * @param data 要绑定的便签或文件夹的具体数据（基于 NoteItemData）
+     * @param choiceMode 当前是否为多选模式
+     * @param checked 在多选模式下，当前项是否已被选中
+     */
     public void bind(Context context, NoteItemData data, boolean choiceMode, boolean checked) {
         if (choiceMode && data.getType() == Notes.TYPE_NOTE) {
             mCheckBox.setVisibility(View.VISIBLE);
@@ -99,6 +110,9 @@ public class NotesListItem extends LinearLayout {
         setBackground(data);
     }
 
+    /**
+     * 根据便签的相对位置（如在一组项的顶部、底部或中间）以及它的主背景色，设置对应的带有相应边角弧度的背景图
+     */
     private void setBackground(NoteItemData data) {
         int id = data.getBgColorId();
         if (data.getType() == Notes.TYPE_NOTE) {

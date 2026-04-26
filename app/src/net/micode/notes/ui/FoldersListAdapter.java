@@ -29,7 +29,12 @@ import net.micode.notes.data.Notes;
 import net.micode.notes.data.Notes.NoteColumns;
 
 
+/**
+ * 文件夹列表适配器，继承自 CursorAdapter。
+ * 用于在移动便签时显示的文件夹选择弹窗中填充文件夹数据。
+ */
 public class FoldersListAdapter extends CursorAdapter {
+    // 查询文件夹需要的列：ID 和 Snippet (作为文件夹名称)
     public static final String [] PROJECTION = {
         NoteColumns.ID,
         NoteColumns.SNIPPET

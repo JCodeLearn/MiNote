@@ -29,6 +29,9 @@ import android.content.DialogInterface.OnClickListener;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 
+/**
+ * 带有 DateTimePicker 的自定义 alertDialog，经常用于选择便签的提醒时间。
+ */
 public class DateTimePickerDialog extends AlertDialog implements OnClickListener {
 
     private Calendar mDate = Calendar.getInstance();
@@ -40,6 +43,11 @@ public class DateTimePickerDialog extends AlertDialog implements OnClickListener
         void OnDateTimeSet(AlertDialog dialog, long date);
     }
 
+    /**
+     * 构造函数
+     * @param context 环境上下文
+     * @param date 初始日期时间，单位毫秒
+     */
     public DateTimePickerDialog(Context context, long date) {
         super(context);
         mDateTimePicker = new DateTimePicker(context);

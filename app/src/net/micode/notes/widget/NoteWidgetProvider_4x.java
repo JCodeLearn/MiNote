@@ -24,6 +24,10 @@ import net.micode.notes.data.Notes;
 import net.micode.notes.tool.ResourceParser;
 
 
+/**
+ * 4x 尺寸大小的便签桌面小部件 Provider。
+ * 继承自 NoteWidgetProvider，主要负责返回 4x 也就是宽占据更大屏幕空间的布局和背景资源。
+ */
 public class NoteWidgetProvider_4x extends NoteWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

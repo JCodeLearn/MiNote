@@ -37,6 +37,11 @@ import net.micode.notes.R;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 自定义的笔记编辑文本框控件，继承自 EditText。
+ * 针对清单模式的场景，可以检测按键输入并在其中自动添加或删除列表项。
+ * 并且支持提取链接（如电话、http、email）的点击与复制操作。
+ */
 public class NoteEditText extends EditText {
     private static final String TAG = "NoteEditText";
     private int mIndex;

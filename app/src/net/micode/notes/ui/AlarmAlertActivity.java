@@ -39,11 +39,17 @@ import net.micode.notes.tool.DataUtils;
 
 import java.io.IOException;
 
-
+/**
+ * 提醒弹出窗口 Activity
+ * 当便签的闹钟提醒时间到达时，会拉起此 Activity 进行声音播放和弹窗提示，支持在锁屏时点亮屏幕显示
+ */
 public class AlarmAlertActivity extends Activity implements OnClickListener, OnDismissListener {
+    // 触发提醒的便签 ID
     private long mNoteId;
+    // 弹窗中展示的便签内容片段
     private String mSnippet;
     private static final int SNIPPET_PREW_MAX_LEN = 60;
+    // 用于播放提醒铃声的媒体播放器
     MediaPlayer mPlayer;
 
     @Override
@@ -54,6 +60,7 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
         final Window win = getWindow();
         win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 
+        // 如果屏幕未点亮，则添加点亮屏幕等标志位
         if (!isScreenOn()) {
             win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                     | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
@@ -64,6 +71,7 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
         Intent intent = getIntent();
 
         try {
+            // 解析传入的 URI 获取便签 ID 并加载内容片段
             mNoteId = Long.valueOf(intent.getData().getPathSegments().get(1));
             mSnippet = DataUtils.getSnippetById(this.getContentResolver(), mNoteId);
             mSnippet = mSnippet.length() > SNIPPET_PREW_MAX_LEN ? mSnippet.substring(0,
@@ -75,6 +83,7 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
         }
 
         mPlayer = new MediaPlayer();
+        // 检查该便签在数据库中是否仍然可见（未被删除），可见则展示提醒对话框并播放音乐
         if (DataUtils.visibleInNoteDatabase(getContentResolver(), mNoteId, Notes.TYPE_NOTE)) {
             showActionDialog();
             playAlarmSound();
@@ -83,11 +92,18 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
         }
     }
 
+    /**
+     * 判断当前屏幕是否处于点亮状态
+     */
     private boolean isScreenOn() {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         return pm.isScreenOn();
     }
 
+    /**
+     * 播放设备默认的闹钟铃声
+     * 会根据系统的静音/响铃模式自动调整播放的音频流类型
+     */
     private void playAlarmSound() {
         Uri url = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM);
 
@@ -119,6 +135,10 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
         }
     }
 
+    /**
+     * 显示提醒对话框，包含便签预览内容
+     * 如果屏幕是亮的，会提供“进入查看”按钮
+     */
     private void showActionDialog() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle(R.string.app_name);
@@ -130,6 +150,10 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
         dialog.show().setOnDismissListener(this);
     }
 
+    /**
+     * 处理对话框按钮点击事件
+     * 如果点击进入查看（BUTTON_NEGATIVE），则拉起 NoteEditActivity
+     */
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case DialogInterface.BUTTON_NEGATIVE:
@@ -143,11 +167,18 @@ public class AlarmAlertActivity extends Activity implements OnClickListener, OnD
         }
     }
 
+    /**
+     * 当对话框消失时回调
+     * 负责停止播放闹铃并结束当前 Activity
+     */
     public void onDismiss(DialogInterface dialog) {
         stopAlarmSound();
         finish();
     }
 
+    /**
+     * 停止闹钟声音并释放 MediaPlayer 资源
+     */
     private void stopAlarmSound() {
         if (mPlayer != null) {
             mPlayer.stop();
