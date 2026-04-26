@@ -105,6 +105,18 @@
             *** uiOptions：窄屏下的 ui 优化，当手机屏幕太窄放不下菜单时，把菜单栏（ActionBar）拆分到屏幕底部。现代 Android 16.0 已经基本废弃了这种处理方式，改用底栏（BottomNavigationView）
             windowSoftInputMode：设定软键盘交互方式，当键盘弹出时，界面会整体向上平移（Pan），而不是压缩界面高度。这样可以确保底部的输入框不被键盘盖住。
         -->
+
+        <!-- 新增：FileProvider配置 -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
         <activity
             android:name=".ui.NotesListActivity"
             android:exported="true"

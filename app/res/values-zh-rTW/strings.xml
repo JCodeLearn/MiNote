@@ -120,6 +120,12 @@
     <string name="search">便籤</string>
     <string name="datetime_dialog_ok">設置</string>
     <string name="datetime_dialog_cancel">取消</string>
+    <!-- 新增：分享为图片-->
+    <string name="menu_share_image">分享為圖片</string>
+    <string name="share_note_image_title">分享筆記圖片</string>
+    <string name="share_note_image_start">已生成圖片，選擇分享方式</string>
+    <string name="error_share_image">圖片生成失敗，請重試</string>
+    <string name="error_empty_note">筆記內容為空，無法生成圖片</string>
     <plurals name="search_results_title">
         <item quantity="other"><xliff:g id="NUMBER">%1$s</xliff:g> 條符合”<xliff:g id="SEARCH">%2$s</xliff:g>“的搜尋結果</item>
     </plurals>

@@ -126,6 +126,12 @@
     <string name="search">Notes</string>
     <string name="datetime_dialog_ok">set</string>
     <string name="datetime_dialog_cancel">cancel</string>
+    <!-- 新增：分析为图片 -->
+    <string name="menu_share_image">Share as image</string>
+    <string name="share_note_image_title">Share note image</string>
+    <string name="share_note_image_start">Image generated, choose sharing method</string>
+    <string name="error_share_image">Failed to generate image, please retry</string>
+    <string name="error_empty_note">Note is empty, cannot generate image</string>
     <plurals name="search_results_title">
          <item quantity="one"><xliff:g id="number" example="1">%1$s</xliff:g> result for \"<xliff:g id="search" example="???">%2$s</xliff:g>\"</item>
         <!-- Case of 0 or 2 or more results. -->
