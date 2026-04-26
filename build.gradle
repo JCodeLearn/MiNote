@@ -16,6 +16,17 @@ buildscript {
         // 依然保持我们指定的 7.4.2 插件版本。这是用来构建和打包 Android 项目的核心 Gradle 插件
         classpath "com.android.tools.build:gradle:7.4.2"
     }
+
+    plugins {
+        id "org.sonarqube" version "7.2.3.7755"
+    }
+
+    sonar {
+        properties {
+            property "sonar.projectKey", "JCodeLearn_MiNote"
+            property "sonar.organization", "jcodelearn"
+        }
+    }
 }
 
 // allprojects 块里配置的信息会应用到当前项目以及其所有子模块（比如 app 模块）中
