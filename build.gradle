@@ -1,24 +1,23 @@
-// 1. buildscript 必须放在绝对的第一位！
+// 1. buildscript 块：配置构建工具所需的环境
 buildscript {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-
+        // 使用 Android 官方和业界标准的 Maven 中央仓库
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
+        // Android 项目核心构建插件
         classpath "com.android.tools.build:gradle:7.4.2"
     }
 }
 
-// 2. plugins 块紧跟在 buildscript 之后
+// 2. 插件声明块
 plugins {
     id "org.sonarqube" version "7.2.3.7755"
 }
 
-// 3. sonar 配置块同样放在外层
+// 3. SonarCloud 全局配置
 sonar {
     properties {
         property "sonar.projectKey", "JCodeLearn_MiNote"
@@ -26,12 +25,10 @@ sonar {
     }
 }
 
-// 4. allprojects 块保持在下方
+// 4. allprojects 块：配置所有子模块（如 app 模块）所需的依赖库仓库
 allprojects {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
-
+        // 同样只保留官方源，确保云端流水线能顺利下载所有依赖
         google()
         mavenCentral()
     }
